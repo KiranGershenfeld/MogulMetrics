@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>  
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <link href="{{ url_for('static', filename='styles/style.css') }}" rel="stylesheet">
+  </head>
+ <body>
+   <div class="mogul-banner">
+     <h1>Mogul Metrics</h1>
+   </div>
+   <h2>Hours Streamed By Week</h2>
+   <div class="topline-container">
+     <div class="left">
+       <div>Total Hours Streamed</div>
+       <div class="metric">{{metrics["total_hours_streamed"]}}</div>
+     </div>
+     <div class="right">
+      <div>Average Daily Hours</div>
+       <div class="metric">{{metrics["average_daily_hours"]}}</div>
+     </div>
+   </div>
+   <div class="chart-container">
+    <div id='chart' class='chart'”></div>
+   </div>
+   
+</body>
+<script type='text/javascript'>
+  var graphs = {{graphJSON | safe}};
+
+  Plotly.plot('chart',graphs, {});
+</script>
+</html>
