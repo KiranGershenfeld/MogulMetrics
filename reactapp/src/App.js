@@ -1,4 +1,3 @@
-import './App.css';
 import AppContainer from './components/AppContainer';
 
 
