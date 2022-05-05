@@ -1,6 +1,7 @@
 #This file defines api functions and their behavior
 from datetime import datetime
 from http.client import HTTPResponse
+import json
 from xmlrpc.client import boolean
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
@@ -8,11 +9,49 @@ from rest_framework.decorators import api_view
 from metricsapp.serializers import LiveStreamsSerializer
 from metricsapp.models import LiveStreams
 import logging;
+import pandas as pd
+import datetime
 
+logging.basicConfig(filename='django_views.log', encoding='utf-8', level=logging.DEBUG)
+logging.info("Logging initialized")
+
+def get_daily_hours_streamed(df):
+    logging.info(df.head())
+    df = df.set_index(df["log_time"])
+    # print(df.head())
+
+    df_aggreagtes = pd.DataFrame()
+    df_aggreagtes["streamed_hours"] = df.resample("1D")["is_live"].apply(lambda x: (x == True).sum() / 6)
+    # df_aggreagtes = df_aggreagtes.reset_index()
+    # df_aggreagtes["date"] = df_aggreagtes["log_time"].dt
+    df_aggreagtes["utc_datetime"] = df_aggreagtes.index
+    logging.info(df_aggreagtes.dtypes)
+    logging.info(df_aggreagtes.head())
+
+    return df_aggreagtes
+
+@api_view(["GET"])
 def all_livestreams(request):
-    # query = Livestreams.objects.all().using("mogul_metrics")
-    query = LiveStreams.objects.all()
+    logging.info("all livestreams request made with data: ")
+    logging.info(request.query_params)
+    #These dates come in in GMT 
+    min_date = request.query_params["min_date_inclusive"]
+    max_date = request.query_params["max_date_exclusive"]
+    logging.info(min_date)
+    logging.info(max_date)
 
-    serialized_data = LiveStreamsSerializer(query, many=True) #Many because multiple objects need to be serialized
-    return JsonResponse(serialized_data.data, safe=False)
+    # query = Livestreams.objects.all().using("mogul_metrics")
+    logging.info("REQUEST MADE")
+    query = LiveStreams.objects.filter(
+        log_time__gte = datetime.datetime.strptime(min_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+    ).filter(
+        log_time__lt = datetime.datetime.strptime(max_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+    )
+
+    df = pd.DataFrame.from_records(query.values())
+    dhs_df = get_daily_hours_streamed(df)
+    json_data = json.loads(dhs_df.to_json(date_format="iso"))["streamed_hours"]
+    logging.info(json_data)
+
+    return JsonResponse(json_data, safe=False)
 
