@@ -1,8 +1,12 @@
-
+.main-panel-content
+{
+    margin: auto;
+    width: 40%;
+}
 .monthly-metrics-section
 {
     margin: auto;
-    width: 50%;
+    width: 100%;
 }
 .chart-container
 {
@@ -29,4 +33,8 @@
 {
     font-size: 25px;
     font-weight: 600;
+}
+.channel-container
+{
+    width: 50%;
 }

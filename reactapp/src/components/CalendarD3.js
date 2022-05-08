@@ -28,7 +28,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
     const svgHeight = height + margin.top + margin.bottom;
 
     const day_cols = {"Sunday": 0, "Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5,"Saturday": 6}
-    const days= ["M", "M", "T", "W", "Th", "F", "S"]
+    const days= ["Su", "M", "T", "W", "Th", "F", "S"]
 
     const first_day = getFirstDayOfMonth(month, year)
     const number_days_in_month = daysInMonth(month, year)
