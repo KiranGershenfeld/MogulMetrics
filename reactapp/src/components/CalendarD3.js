@@ -28,6 +28,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
     const svgHeight = height + margin.top + margin.bottom;
 
     const day_cols = {"Sunday": 0, "Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5,"Saturday": 6}
+    const days= ["M", "M", "T", "W", "Th", "F", "S"]
 
     const first_day = getFirstDayOfMonth(month, year)
     const number_days_in_month = daysInMonth(month, year)
@@ -43,6 +44,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
     var date_iterator = first_day
     var data_index = 0
     var max_hours_streamed = 0
+    var label_height_offset = 20
 
     var first_day_offset = (first_day.day() + 1) % 7
 
@@ -53,40 +55,56 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
       var row_index = Math.floor(i / days_per_row)
 
       day_obj["x"] = column_index * (cellSize + grid_margin)
-      day_obj["y"] = row_index * (cellSize + grid_margin)
+      day_obj["y"] = row_index * (cellSize + grid_margin) + label_height_offset
 
       if(i < first_day_offset)
       {
         day_obj["in_month"] = false
         calendar_data.push(day_obj)
-        continue
-      }
-
-      day_obj["in_month"] = true
-
-      if(data_index < data.length && data[data_index]["date"].isSame(date_iterator, "day"))
-      {
-        day_obj["valid"] = true
-        day_obj["date"] = data[data_index]["date"]
-        day_obj["streamed_hours"] = data[data_index]["streamed_hours"]
-        if(day_obj["streamed_hours"] > max_hours_streamed)
-        {
-          max_hours_streamed = day_obj["streamed_hours"]
-        }
-
-        data_index++
-        
       }else
       {
-        day_obj["valid"] = false
-        day_obj["date"] = date_iterator
-        day_obj["streamed_hours"] = 0
+        day_obj["in_month"] = true
+
+        if(data_index < data.length && data[data_index]["date"].isSame(date_iterator, "day"))
+        {
+          day_obj["valid"] = true
+          day_obj["date"] = data[data_index]["date"]
+          day_obj["streamed_hours"] = data[data_index]["streamed_hours"]
+          if(day_obj["streamed_hours"] > max_hours_streamed)
+          {
+            max_hours_streamed = day_obj["streamed_hours"]
+          }
+
+          data_index++
+          
+        }else
+        {
+          day_obj["valid"] = false
+          day_obj["date"] = date_iterator
+          day_obj["streamed_hours"] = 0
+        }
+
+        calendar_data.push(day_obj)
+
+        date_iterator = date_iterator.add("1", "days")
+
       }
 
-      calendar_data.push(day_obj)
-
-      date_iterator = date_iterator.add("1", "days")
+      
     }
+
+    var label_data = []
+    for(var i = 0; i < 7; i++)
+    {
+      var column_index = i % days_per_row
+      
+      var label_obj = {}
+      label_obj["text"] = days[i]
+      label_obj["x"] = column_index * (cellSize + grid_margin) + (cellSize/2)
+      label_obj["y"] = 10
+      label_data.push(label_obj)
+    }
+
 
     React.useEffect(() => {
 
@@ -102,6 +120,19 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
       const colorScale = d3.scaleSequential(d3_chromatic.interpolateGreens)
         .domain([0, max_hours_streamed + 2])
 
+      console.log(label_data)
+      //Creating row labels
+      svg.selectAll(".column_label")
+        .data(label_data)
+        .enter()
+          .append("text")
+            .attr("x", (d) => d.x)
+            .attr("y", (d) => d.y)
+            .text(function(d)
+            {
+              return d["text"]
+            })
+            .style("text-anchor", "middle")
       //Creating a grid of objects in d3
       svg.selectAll(".day")
         .data(calendar_data)

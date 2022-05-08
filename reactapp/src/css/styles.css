@@ -1,6 +1,32 @@
 
-.calendar-section
+.monthly-metrics-section
 {
     margin: auto;
-    width: 30%;
+    width: 50%;
+}
+.chart-container
+{
+    padding-top: 25px;
+    margin: auto;
+    width: 80%;
+}
+.metrics-card
+{
+    text-align: center;
+    flex-grow: 1;
+    width: 33%;
+    margin-top: 20px;
+}
+.topline-container
+{
+    display: flex;
+}
+.metrics-title
+{
+    font-size: 15px;
+}
+.metrics-metric
+{
+    font-size: 25px;
+    font-weight: 600;
 }
