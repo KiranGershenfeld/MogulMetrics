@@ -12,7 +12,7 @@ what month should the calendar draw. In order for the result to make sense *most
 that month range. The calendar will then draw the month with any valid dates given (hopefully all matching) greying out dates that have not occured yet. 
 */
 function getFirstDayOfMonth(month, year){
-  return moment(year + "-" + month + "-01T00:00:00.000Z")
+  return moment(year + "-" + month + "-01")
 }
 
 function daysInMonth (month, year) {
@@ -21,6 +21,7 @@ function daysInMonth (month, year) {
 
 const CalendarD3 = ({ data, month, year, dimensions }) => {
     console.log("Calling Calendar")
+    console.log(data)
 
     const svgRef = React.useRef(null);
     var { width, height, margin } = dimensions;
@@ -46,7 +47,9 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
     var max_hours_streamed = 0
     var label_height_offset = 20
 
-    var first_day_offset = (first_day.day() + 1) % 7
+    var first_day_offset = (first_day.day()) % 7
+    console.log("DATE ITERATOR "+ date_iterator.toString())
+    console.log("DAYS IN MONTH" + number_days_in_month)
 
     for(var i = 0; i < number_days_in_month + first_day_offset; i++)
     {
@@ -59,6 +62,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
 
       if(i < first_day_offset)
       {
+        console.log("DAY NOT IN MONTH")
         day_obj["in_month"] = false
         calendar_data.push(day_obj)
       }else
@@ -69,6 +73,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
         {
           day_obj["valid"] = true
           day_obj["date"] = data[data_index]["date"]
+          console.log("DATE" + data[data_index]["date"].toString())
           day_obj["streamed_hours"] = data[data_index]["streamed_hours"]
           if(day_obj["streamed_hours"] > max_hours_streamed)
           {
@@ -79,6 +84,11 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
           
         }else
         {
+          console.log(data_index)
+          console.log(data.length)
+          // console.log(date_iterator.toString())
+          // console.log(data[data_index]["date"].toString())
+          console.log("data index too large or date not same as iterator")
           day_obj["valid"] = false
           day_obj["date"] = date_iterator
           day_obj["streamed_hours"] = 0
@@ -134,6 +144,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
             })
             .style("text-anchor", "middle")
       //Creating a grid of objects in d3
+      console.log(calendar_data)
       svg.selectAll(".day")
         .data(calendar_data)
         .enter()
@@ -144,7 +155,10 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
           .attr("y", (d) => d.y)
           .attr("fill", function(d){
             if(d.valid){return colorScale(d["streamed_hours"])}
-            else{return "#ebebeb"}
+            else{
+              console.log("D IS NOT VALID GREY")
+              return "#ebebeb"
+            }
           })
     }, [data]);
   

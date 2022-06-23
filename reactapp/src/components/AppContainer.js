@@ -42,7 +42,7 @@ export default class AppContainer extends React.Component {
     set_selected_month(month_index, year)
     {
       var firstDay = new Date(year, month_index, 1);
-      var lastDay = new Date(year, month_index + 1, 0);
+      var lastDay = new Date(year, month_index + 1, 1);
       axios.get('api/all_livestreams', { 
           params: {
             min_date_inclusive: firstDay.toISOString(),
