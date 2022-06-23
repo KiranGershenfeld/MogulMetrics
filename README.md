@@ -21,8 +21,8 @@ This is a rough outline of ideas for what will be included in the dashboard:
 This is a fairly modular project which lends to easy contributions from the community. If there are statistics and metrics that you think would be useful to the MogulMoves team please reach out! If you have the skills to contribute to the development process, let me know and we can talk about access to databases and such.
 
 ## Tech Stack
-This project is primarily build in Python using Flask, Plotly, Dash, and Pandas.
-The database solution is currently CoackroachDB as it has a generous free tier for mySQL RDB.
+This project is build with PostgreSQL, Django, React.js, and D3.js
+The database is currently hosted by CoackroachDB as it has a generous free tier for PostgreSQL.
 The scheduled scripting is running on AWS Lambda and EC2 instances. 
 
 If you are familiar with these tools and passionate about social media data science contributions are always welcome.   
