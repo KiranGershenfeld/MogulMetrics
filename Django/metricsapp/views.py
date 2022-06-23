@@ -52,7 +52,7 @@ def all_livestreams(request):
     dhs_df = get_daily_hours_streamed(df)
     topline_metrics = {}
     topline_metrics["monthly_hours_streamed"] = dhs_df["streamed_hours"].sum()
-    topline_metrics["average_daily_hours"] = dhs_df["streamed_hours"].sum() / len(dhs_df["streamed_hours"])
+    topline_metrics["average_daily_hours"] = dhs_df["streamed_hours"].mean()
     topline_metrics["average_stream_length"] = dhs_df[dhs_df["streamed_hours"] != 0]["streamed_hours"].mean()
     live_data = json.loads(dhs_df.to_json(date_format="iso"))["streamed_hours"]
     json_data = {}

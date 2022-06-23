@@ -6,7 +6,6 @@ import * as moment from "moment"
 
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Container } from 'react-bootstrap';
 import Select from 'react-select'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import Card from 'react-bootstrap/Card';
 import ProfilePhoto from '../static/ludwigprofile.jpg' // relative path to image 
 
@@ -42,7 +41,7 @@ export default class AppContainer extends React.Component {
     set_selected_month(month_index, year)
     {
       var firstDay = new Date(year, month_index, 1);
-      var lastDay = new Date(year, month_index + 1, 0);
+      var lastDay = new Date(year, month_index + 1, 1);
       axios.get('api/all_livestreams', { 
           params: {
             min_date_inclusive: firstDay.toISOString(),
