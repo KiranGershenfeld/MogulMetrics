@@ -3,7 +3,8 @@ from dotenv import load_dotenv
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy import text
+from sqlalchemy import text, Table, Column, Integer, String, MetaData, ForeignKey
+
 import sqlalchemy.dialects
 
 load_dotenv()
@@ -134,6 +135,25 @@ def attemt_insert():
         for row in res:
             print(row)
 
+def safe_insert_test():
+    metadata_obj = MetaData()
+    vvl_table = Table('video_view_lifecycle', metadata_obj, autoload_with=engine)
+    stmt = vvl_table.delete().where(vvl_table.c.video_id=='test_video_safe_id')
+    with engine.connect() as conn:
+        res = conn.execute(stmt)
+    
+def remove_duplicate_tasks():
+    with engine.connect() as conn:
+        res = conn.execute(text("""
+            WITH row_ranked AS (
+                SELECT video_id, prev_schedule_index, record_timestamp
+                row_number() OVER(PARITION BY video_id, prev_schedule_index ORDER BY record_timestamp ASC)
+            )
+            SELECT * FROM row_ranked WHERE video_id='CkoquiSnqbk'
+        """))
+
+
 # print_task_log()
 # print_video_log()
-print_video_log_shape()
+# print_video_log_shape()
+safe_insert_test()

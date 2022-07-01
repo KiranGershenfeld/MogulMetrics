@@ -93,6 +93,18 @@ def initialize_subscriptions(channel_list):
 
     res = requests.post('https://pubsubhubbub.appspot.com/', headers=headers, data =post_data)
 
+def videoIsNew(data):
+  video_id = data.get("entry", {}).get("yt:videoId")
+  if video_id:
+    with engine.connect() as connection:
+      res = connection.execute(text(f"SELECT * FROM video_notification_feed WHERE video_id='{video_id}'"))
+      if(res.rowcount <= 0):
+        for row in res:
+          print(row)
+        return True
+
+  return False
+
 def read_channel_list():
   with open('./channel_targets.txt') as handle:
       lines = handle.readlines()
@@ -130,8 +142,9 @@ def feed():
             xml_dict = xmltodict.parse(request.data)
             logging.info(json.dumps(xml_dict, indent=2))
 
-            write_video_notification(xml_dict["feed"])
-            initialize_scrape_task(xml_dict["feed"].get("entry", {}).get("yt:videoId"))
+            if videoIsNew(xml_dict["feed"]):
+              write_video_notification(xml_dict["feed"])
+              initialize_scrape_task(xml_dict["feed"].get("entry", {}).get("yt:videoId"))
 
         except (ExpatError, LookupError, KeyError):
             # request.data contains malformed XML or no XML at all, return FORBIDDEN.
@@ -163,8 +176,8 @@ xml_dict = {"feed": {
     "title": "YouTube video feed",
     "updated": "2022-06-09T01:00:11.829270127+00:00",
     "entry": {
-      "id": "yt:video:XCDnduzy1jU",
-      "yt:videoId": "XCDnduzy1jU",
+      "id": "yt:video:CkoquiSnqbk",
+      "yt:videoId": "CkoquiSnqbkasd",
       "yt:channelId": "UCfCwtlMHu67y6zuJA10c_wQ",
       "title": "pubsub video noitification test 8",
       "link": {

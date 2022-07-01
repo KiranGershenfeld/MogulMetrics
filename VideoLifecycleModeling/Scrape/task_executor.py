@@ -1,7 +1,9 @@
 import time
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import create_engine
-from sqlalchemy import text
+from sqlalchemy import text, Table, MetaData
+#delete t1 from video_scrape_tasks t1 join row_ranked t2 on t1.video_id = t2.video_id and t2.
+
 import os
 from dotenv import load_dotenv
 import googleapiclient.discovery
@@ -11,6 +13,8 @@ class ScrapeManager():
 
     def __init__(self, engine, schedule, youtube_api_key):
         self.engine = engine
+        self.metadata_obj = MetaData()
+
         self.schedule = schedule
         self.queue = []
 
@@ -51,7 +55,7 @@ class ScrapeManager():
 
     def write_new_task(self, previous_task):
         with self.engine.connect() as conn:
-
+            
             #Previous task information
             video_id = previous_task["video_id"]
             prev_schedule_index = previous_task["prev_schedule_index"]
@@ -95,6 +99,7 @@ class ScrapeManager():
             conn.execute(f"INSERT INTO video_scrape_tasks (video_id, prev_schedule_index, task_status, video_lifecycle_status) VALUES ('{video_id}', {next_task_index}, '{task_status}', '{video_lifecycle_status}')")
 
     def write_view_record(self, view_record):
+        vvl_table = Table('video_view_lifecycle', self.metadata_obj, autoload_with=self.engine)
 
         video_id = view_record.get("id")
         video_title = view_record.get("snippet", {}).get("title")
@@ -108,69 +113,13 @@ class ScrapeManager():
         video_duration = view_record.get("contentDetails", {}).get("duration")
         thumbnail_url = view_record.get("snippet", {}).get("thumbnails", {}).get("default",  {}).get("url", "")
         date_uploaded = view_record.get("snippet", {}).get("publishedAt")
-
         record_timestamp = datetime.utcnow()
 
+        stmt = vvl_table.insert().values(video_id=video_id, video_title=video_title, channel_id=channel_id, channel_name=channel_name, views=views, likes=likes, favorites=favorites, comment_count=comments, dislikes=dislikes, video_duration=video_duration, thumbnail_url=thumbnail_url, date_uploaded=date_uploaded, record_timestamp=record_timestamp)
+
         with self.engine.connect() as conn:
-            sql_command = f"""INSERT INTO public.video_view_lifecycle (video_id, video_title, channel_id, channel_name, views, likes, favorites, comment_count, dislikes, video_duration, thumbnail_url, date_uploaded, record_timestamp) VALUES (
-                            '{video_id}',
-                            '{video_title}',
-                            '{channel_id}',
-                            '{channel_name}',
-                            {views},
-                            {likes},
-                            {favorites},
-                            {comments},
-                            {dislikes},
-                            '{video_duration}',
-                            '{thumbnail_url}',
-                            '{date_uploaded}',
-                            '{record_timestamp}'
-                        );"""
-
-            # sql_command = f"""INSERT INTO public.video_view_lifecycle (
-            #                         video_id, 
-            #                         video_title, 
-            #                         log_number, 
-            #                         channel_id, 
-            #                         channel_name,
-            #                         views, 
-            #                         likes, 
-            #                         favorites, 
-            #                         comment_count, 
-            #                         dislikes, 
-            #                         video_duration, 
-            #                         thumbnail_url, 
-            #                         waited_before, 
-            #                         waiting_after, 
-            #                         date_uploaded, 
-            #                         record_timestamp) 
-            #                     VALUES (
-            #                         'WEEEE',
-            #                         '$10,000 IF SHE CAN BEAT ME ON STREAM',
-            #                         0,
-            #                         'UCrPseYLGpNygVi34QpGNqpA',
-            #                         'Ludwig',
-            #                         772131,
-            #                         37210,
-            #                         0,
-            #                         721,
-            #                         -1,
-            #                         'PTOSJALSK',
-            #                         'https://i.ytimg.com/vi/H5dqjlJ23Ak/default.jpg',
-            #                         0,
-            #                         5,
-            #                         '2022-06-08T05:58:21Z',
-            #                         '2022-06-08T06:58:21Z'
-            #                     );"""
-
-        
-            res = conn.execute(text(sql_command))
+            res = conn.execute(stmt)
             print(f"Wrote Record View For Video {video_id}")
-            
-            # res = conn.execute(text("SELECT * FROM public.video_view_lifecycle"))
-            # for row in res:
-            #     print(row)
 
         
         return
