@@ -86,8 +86,7 @@ export default class AppContainer extends React.Component {
       this.set_selected_month(month, year)
 
     }
-
-  
+    
     render() {
       return (
         <div>
