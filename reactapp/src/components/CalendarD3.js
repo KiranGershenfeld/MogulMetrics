@@ -54,6 +54,10 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
     for(var i = 0; i < number_days_in_month + first_day_offset; i++)
     {
       var day_obj = {}
+      // in_month dictates whether to render a box at all
+      // occurred dictates whether that date has occurred or not
+      // valid dictates whether or not there is data for that date
+
       var column_index = i % days_per_row
       var row_index = Math.floor(i / days_per_row)
 
@@ -65,35 +69,42 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
         console.log("DAY NOT IN MONTH")
         day_obj["in_month"] = false
         calendar_data.push(day_obj)
-      }else
+      }
+      
+      else
       {
         day_obj["in_month"] = true
 
-        if(data_index < data.length && data[data_index]["date"].isSame(date_iterator, "day"))
+        if(date_iterator > new Date())
         {
-          day_obj["valid"] = true
-          day_obj["date"] = data[data_index]["date"]
-          console.log("DATE" + data[data_index]["date"].toString())
-          day_obj["streamed_hours"] = data[data_index]["streamed_hours"]
-          if(day_obj["streamed_hours"] > max_hours_streamed)
+          day_obj["occurred"] = false
+          console.log(date_iterator + "has not occured yet, should be grey")
+        }
+        else{
+          day_obj["occurred"] = true
+
+          if(data_index < data.length && data[data_index]["date"].isSame(date_iterator, "day"))
           {
-            max_hours_streamed = day_obj["streamed_hours"]
+            day_obj["valid"] = true
+            day_obj["date"] = data[data_index]["date"]
+            console.log("DATE" + data[data_index]["date"].toString())
+            day_obj["streamed_hours"] = data[data_index]["streamed_hours"]
+            if(day_obj["streamed_hours"] > max_hours_streamed)
+            {
+              max_hours_streamed = day_obj["streamed_hours"]
+            }
+
+            data_index++
+            
+          }else
+          {
+            console.log("No data for date: " + date_iterator)
+            day_obj["valid"] = false
+            day_obj["date"] = date_iterator
+            day_obj["streamed_hours"] = 0
           }
 
-          data_index++
-          
-        }else
-        {
-          console.log(data_index)
-          console.log(data.length)
-          // console.log(date_iterator.toString())
-          // console.log(data[data_index]["date"].toString())
-          console.log("data index too large or date not same as iterator")
-          day_obj["valid"] = false
-          day_obj["date"] = date_iterator
-          day_obj["streamed_hours"] = 0
         }
-
         calendar_data.push(day_obj)
 
         date_iterator = date_iterator.add("1", "days")
@@ -154,10 +165,27 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
           .attr("x", (d) => d.x)
           .attr("y", (d) => d.y)
           .attr("fill", function(d){
-            if(d.valid){return colorScale(d["streamed_hours"])}
-            else{
-              console.log("D IS NOT VALID GREY")
+            // not in month, or date has not occurred yet -> grey
+            // in month and date has occurred but no data -> red
+            // in month and date has occurred with data showing no hours streamed -> grey
+            // in month and date has occurred with data showing hours streamed -> green color scale
+            if(!d.in_month)
+            {
+              return 'white'
+            }
+
+            if(!d.occurred)
+            {
               return "#ebebeb"
+            }
+
+            if(!d.valid)
+              {
+                return "#ffd9d9"
+              }
+            else
+            {
+              return colorScale(d["streamed_hours"])
             }
           })
     }, [data]);

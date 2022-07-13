@@ -12,7 +12,10 @@ import ProfilePhoto from '../static/ludwigprofile.jpg' // relative path to image
 const options = [
   { value: 2, label: 'March' },
   { value: 3, label: 'April' },
-  { value: 4, label: 'May' }
+  { value: 4, label: 'May' },
+  { value: 5, label: 'June' },
+  { value: 6, label: 'July' },
+  { value: 7, label: 'August' }
 ]
 const year = 2022
 
@@ -54,8 +57,14 @@ export default class AppContainer extends React.Component {
         })
           .then(res => {
             var data = []
+            if(Object.keys(res.data).length === 0)
+            {
+              this.setState({data: {}});
+              this.setState({topline_metrics: {}})
+            }
+
             for (const [iso_string, hours] of Object.entries(res.data["daily_hours"])) {
-              data.push({"date": moment(iso_string), "streamed_hours": hours})
+               data.push({"date": moment(iso_string), "streamed_hours": hours})
             }
             console.log(data)
             this.setState({data: data});
@@ -73,7 +82,7 @@ export default class AppContainer extends React.Component {
     componentDidMount() {
      
       var month = new Date().getMonth()
-      console.log(month)
+      console.log("CURRENT MONTH IS : " + month)
       this.set_selected_month(month, year)
 
     }

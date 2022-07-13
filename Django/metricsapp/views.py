@@ -13,24 +13,23 @@ import pandas as pd
 import datetime
 import time
 
-logging.basicConfig(filename='django_views.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='django_views.log', level=logging.DEBUG)
 logging.info("Logging initialized")
 
 def get_daily_hours_streamed(df):
+
     utc_offset = time.localtime().tm_gmtoff / (60 * 60)
-    logging.info(df.log_time)
     df = df.set_index(df["log_time"].dt.tz_localize("UTC").dt.tz_convert("US/Pacific"))
-    logging.info(df.index)
-
-    # print(df.head())
-
+    
     df_aggreagtes = pd.DataFrame()
     df_aggreagtes["streamed_hours"] = df.resample("1D")["is_live"].apply(lambda x: (x == True).sum() / 6)
+    logging.info("AFTER AGG")
+    # logging.info(df_aggreagtes.head(5))
     # df_aggreagtes = df_aggreagtes.reset_index()
     # df_aggreagtes["date"] = df_aggreagtes["log_time"].dt
     df_aggreagtes["utc_datetime"] = df_aggreagtes.index
-    logging.info(df_aggreagtes.dtypes)
-    logging.info(df_aggreagtes.head())
+    # logging.info(df_aggreagtes.dtypes)
+    # logging.info(df_aggreagtes.head())
 
     return df_aggreagtes
 
@@ -54,6 +53,8 @@ def all_livestreams(request):
     )
 
     df = pd.DataFrame.from_records(query.values())
+    if(df.empty):
+        return JsonResponse({}, safe=False)
 
     dhs_df = get_daily_hours_streamed(df)
     topline_metrics = {}
