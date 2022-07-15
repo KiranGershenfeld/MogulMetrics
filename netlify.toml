@@ -1,5 +1,5 @@
 [build]
-  base = "reactapp"
+  base = "__"
   publish = "reactapp/build"
   command = "npm run build"
 
