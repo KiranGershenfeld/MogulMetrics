@@ -45,7 +45,7 @@ export default class AppContainer extends React.Component {
     {
       var firstDay = new Date(year, month_index, 1);
       var lastDay = new Date(year, month_index + 1, 1);
-      axios.get('https://ec2-18-191-182-112.us-east-2.compute.amazonaws.com:8000/api/all_livestreams', { 
+      axios.get('http://ec2-18-191-182-112.us-east-2.compute.amazonaws.com:8000/api/all_livestreams', { 
           params: {
             min_date_inclusive: firstDay.toISOString(),
             max_date_exclusive:  lastDay.toISOString(),
