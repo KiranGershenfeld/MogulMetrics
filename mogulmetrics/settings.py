@@ -154,4 +154,5 @@ CORS_ORIGIN_WHITELIST = [
 
 CORS_ALLOWED_ORIGINS = [
     'https://earnest-crostata-9ec741.netlify.app',
+    'http://localhost:3000',
 ]
