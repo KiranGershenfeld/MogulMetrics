@@ -3,11 +3,14 @@ import axios from 'axios';
 import '../css/styles.css'
 import CalendarD3 from './CalendarD3';
 import * as moment from "moment"
+import {config} from '../constants'
 
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Container } from 'react-bootstrap';
 import Select from 'react-select'
 import Card from 'react-bootstrap/Card';
 import ProfilePhoto from '../static/ludwigprofile.jpg' // relative path to image 
+
+const API_URL = config.url.API_URL
 
 const options = [
   { value: 2, label: 'March' },
@@ -45,7 +48,7 @@ export default class AppContainer extends React.Component {
     {
       var firstDay = new Date(year, month_index, 1);
       var lastDay = new Date(year, month_index + 1, 1);
-      axios.get('/api/all_livestreams', { 
+      axios.get(`${API_URL}/api/all_livestreams`, { 
           params: {
             min_date_inclusive: firstDay.toISOString(),
             max_date_exclusive:  lastDay.toISOString(),
