@@ -160,6 +160,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
         .data(calendar_data)
         .enter()
           .append("rect")
+          .attr("class", "day-rect")
           .attr("width", cellSize)
           .attr("height", cellSize)
           .attr("x", (d) => d.x)
@@ -188,6 +189,64 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
               return colorScale(d["streamed_hours"])
             }
           })
+
+      var tooltip = d3.select(".chart-container")
+      .append("div")
+        .style("class", "day-tool-tip")
+        .style("position", "absolute")
+        .style("visibility", "hidden")
+        .style("background-color", "white")
+        .style("border", "1px solid gray")
+        .style("border-radius", "10px")
+        .style("width", `100px`)
+        // .style("height", "50px")
+        .style("top", (100)+"px")
+        .style("left",(100)+"px")
+        .style("text-align", "center")
+        .style("font-size", "0.8em")
+        .style("padding", "5px 3px 3px 3px")
+        .text("No data for this date");
+
+      svg.selectAll(".day-rect")
+        .on("mouseover", function(mouse_event, data){
+          if(data.in_month == true)
+          {
+            console.log("setting visibility to true")
+            if(!data.valid)
+            {
+              if(!data.occurred)
+              {
+                return tooltip.style("visibility", "hidden");
+              }
+              else
+              {
+                tooltip.text("No data for this date")
+              }
+            }
+            else
+            {
+              tooltip.text(`${data["streamed_hours"].toFixed(2)} hours streamed`)
+            }
+            return tooltip.style("visibility", "visible");
+          }
+
+          
+        })
+        .on("mousemove", function(mouse_event, data){
+          if(data.in_month == true)
+          {
+            var el = d3.select("#chart-container").node()
+            return tooltip.style("top", (window.scrollY + d3.select(this).node().getBoundingClientRect().top - tooltip.node().getBoundingClientRect()["height"] - 5)+"px").style("left",(data["x"] - (tooltip.node().getBoundingClientRect()["width"]/2 - cellSize/2)  + el.getBoundingClientRect().left)+"px");
+          }
+        })
+        .on("mouseout", function(mouse_event, data){
+          if(data.in_month == true)
+          {
+            return tooltip.style("visibility", "hidden");
+          }
+        })
+      
+        
     }, [data]);
   
     return <svg ref={svgRef} width={svgWidth} height={svgHeight} />;

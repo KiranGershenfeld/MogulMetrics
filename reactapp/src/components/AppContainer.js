@@ -13,12 +13,18 @@ import ProfilePhoto from '../static/ludwigprofile.jpg' // relative path to image
 const API_URL = config.url.API_URL
 
 const options = [
+  { value: 0, label: 'January' },
+  { value: 1, label: 'February' },
   { value: 2, label: 'March' },
   { value: 3, label: 'April' },
   { value: 4, label: 'May' },
   { value: 5, label: 'June' },
   { value: 6, label: 'July' },
-  { value: 7, label: 'August' }
+  { value: 7, label: 'August' },
+  { value: 8, label: 'September' },
+  { value: 9, label: 'October' },
+  { value: 10, label: 'November' },
+  { value: 11, label: 'December' },
 ]
 const year = 2022
 
@@ -130,7 +136,7 @@ export default class AppContainer extends React.Component {
                 <span className='metrics-title'>Hours Streamed</span>
                 <div>
                   <span className='metrics-metric'>
-                      {parseFloat(this.state.topline_metrics.monthly_hours_streamed).toFixed(0)}
+                      {parseFloat(this.state.topline_metrics.monthly_hours_streamed).toFixed(1)}
                   </span>
                 </div>
                 </Card.Body>
