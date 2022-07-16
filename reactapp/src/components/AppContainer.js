@@ -27,6 +27,9 @@ const options = [
   { value: 11, label: 'December' },
 ]
 const year = 2022
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
 
 export default class AppContainer extends React.Component {
     constructor(props){
@@ -91,7 +94,6 @@ export default class AppContainer extends React.Component {
     componentDidMount() {
      
       var month = new Date().getMonth()
-      console.log("CURRENT MONTH IS : " + month)
       this.set_selected_month(month, year)
 
     }
@@ -127,6 +129,7 @@ export default class AppContainer extends React.Component {
             <div className="month-dropdown" style={{"width": "30%", "marginTop": "15px"}}>
               <Select
                 options={options}
+                defaultValue={{ value: new Date().getMonth(), label: monthNames[new Date().getMonth()]}}
                 onChange={(e) => this.set_selected_month(e.value, year)}
               />
             </div>
