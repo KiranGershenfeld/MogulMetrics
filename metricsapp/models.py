@@ -16,6 +16,25 @@ class LiveStreams(models.Model):
     class Meta:
         db_table = 'live_streams'
 
+class VideoLifecycle(models.Model):
+    video_id = models.CharField(max_length=256)
+    video_title = models.TextField(blank=True, null=True)
+    channel_id = models.CharField(max_length=256)
+    channel_name = models.TextField(blank=True, null=True)
+    views = models.IntegerField(blank=True, null=True)
+    likes = models.IntegerField(blank=True, null=True)
+    favorites = models.IntegerField(blank=True, null=True)
+    comment_count = models.IntegerField(blank=True, null=True)
+    dislikes = models.IntegerField(blank=True, null=True)
+    video_duration = models.TextField(blank=True, null=True)
+    thumbnail_url = models.TextField(blank=True, null=True)
+    date_uploaded = models.DateTimeField(blank=True, null=True)
+    record_timestamp = models.DateTimeField(primary_key=True)
+
+    class Meta:
+        managed = False
+        unique_together = (('video_id', 'record_timestamp'),)
+        db_table = 'video_view_lifecycle'
 
 class GeographyColumns(models.Model):
     f_table_catalog = models.TextField(blank=True, null=True)  # This field type is a guess.
