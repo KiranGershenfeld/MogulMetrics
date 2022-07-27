@@ -5,10 +5,11 @@ import CalendarD3 from './CalendarD3';
 import * as moment from "moment"
 import {config} from '../constants'
 
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Container } from 'react-bootstrap';
+import MogulNavBar from './Navbar'
 import Select from 'react-select'
 import Card from 'react-bootstrap/Card';
 import ProfilePhoto from '../static/ludwigprofile.jpg' // relative path to image 
+
 
 const API_URL = config.url.API_URL
 
@@ -101,11 +102,7 @@ export default class AppContainer extends React.Component {
     render() {
       return (
         <div>
-          <div className="nav-bar-container">
-            <Navbar className="justify-content-center" bg="dark" expand="lg" variant="dark">
-                <Navbar.Brand href="#home">MOGUL METRICS</Navbar.Brand>
-            </Navbar>
-          </div>
+          <MogulNavBar />
           <div className='main-panel-content'>
           <div className='channel-container'>
             <Card className= "channel-card d-flex vertical-center" style={{"marginTop": "10px", "padding": "1px 1px 1px 1px"}}>
@@ -117,7 +114,7 @@ export default class AppContainer extends React.Component {
                       Ludwig
                     </div>
                     <div style={{"fontSize": "13px", "color": "grey"}}>
-                      2.92M Subscribers
+                      3.3M Subscribers
                     </div>
                   </div>
                 </div>
