@@ -152,6 +152,8 @@ CORS_ORIGIN_WHITELIST = [
     'https://earnest-crostata-9ec741.netlify.app',
 ]
 
+ALLOWED_HOSTS = ["*"]
+
 CORS_ALLOWED_ORIGINS = [
     'https://earnest-crostata-9ec741.netlify.app',
 ]
