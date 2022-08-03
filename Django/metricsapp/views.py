@@ -89,7 +89,12 @@ def video_lifecycle(request):
         date_uploaded__lt = datetime.datetime.strptime(max_date, "%Y-%m-%dT%H:%M:%S.%fZ")
     )
 
-    df = pd.DataFrame.from_records(query.values()).sort_values(by=['record_timestamp'])
+    df = pd.DataFrame.from_records(query.values())
+    if(df.empty):
+        return JsonResponse({}, safe=False)
+
+    df = df.sort_values(by=['record_timestamp'])
+
     logging.info(df.shape)
 
     logging.info(f"queried db for {df.shape[0]} rows in {time.perf_counter() - start} seconds")

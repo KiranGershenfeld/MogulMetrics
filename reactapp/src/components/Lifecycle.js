@@ -49,9 +49,11 @@ export default class LifecycleContainer extends React.Component {
     })
       .then(res => {
         var data = []
+        console.log("RECIEVED DATA: ")
+        console.log(res.data)
         if(Object.keys(res.data).length === 0)
         {
-          this.setState({data: {}});
+          this.setState({data: []});
           this.setState({topline_metrics: {}})
         }
         else
@@ -65,8 +67,10 @@ export default class LifecycleContainer extends React.Component {
 
   componentDidMount() {
     var currDate = new Date()
-    var monthPrevdate = new Date()
-    this.query_videos('UCz6XquIbM5OcfK7r3hQQCXA', new Date(monthPrevdate.setDate(monthPrevdate.getMonth() - 1)), currDate)
+    var monthPrevdate = new Date();
+    monthPrevdate.setMonth(monthPrevdate.getMonth() - 1);
+    console.log(monthPrevdate)
+    this.query_videos('UCz6XquIbM5OcfK7r3hQQCXA', monthPrevdate, currDate)
   }
 
   render() {

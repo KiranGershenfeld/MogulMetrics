@@ -41,6 +41,8 @@ const VideoViewPlot = ({ data, dimensions }) => {
         let dates_of_upload = []
         let video_titles = []
 
+        console.log(typeof data)
+        
         data.map((e) => {
             video_ids.push(e["video_id"]);
             time_deltas.push(e["time_delta"]);
