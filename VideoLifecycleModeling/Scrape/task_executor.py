@@ -1,5 +1,6 @@
 import time
 from datetime import datetime, timezone, timedelta
+from urllib.error import HTTPError
 from sqlalchemy import create_engine
 from sqlalchemy import text, Table, MetaData
 #delete t1 from video_scrape_tasks t1 join row_ranked t2 on t1.video_id = t2.video_id and t2.
@@ -21,6 +22,15 @@ class ScrapeManager():
         api_service_name = "youtube"
         api_version = "v3"
         self.youtube = googleapiclient.discovery.build(api_service_name, api_version, developerKey = youtube_api_key)
+
+    def attempt_request(self, request, sleep_timeout):
+        try:
+            response = request.execute()
+        except HTTPError as e:
+            print(f"YouTube API request returned {e}. Sleeping for {sleep_timeout} seconds...")
+            time.sleep(sleep_timeout)
+            response = self.attempt_request(request, sleep_timeout * 2)
+        return response
 
     def run(self):
         while True:
@@ -131,7 +141,8 @@ class ScrapeManager():
             id=video_id
         )
         #print(f"YouTube API request generated")
-        response = request.execute()
+        response = self.attempt_request(request, 60)
+        #response = request.execute()
         print(video_id)
         print(f"YouTube API response: {response}")
 
