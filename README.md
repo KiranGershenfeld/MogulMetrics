@@ -1,6 +1,8 @@
 # MogulMetrics
 Welcome to MogulMetrics, a dashboard of aggregated metrics for all Mogul Moves social meida outlets. This tool is designed from the ground up for the YouTube livestreaming ecosystem and aims to fill the gaps in YouTube's live stream analytics.
 
+Currently hosted at [mogulmetrics.net](https://www.mogulmetrics.net)
+
 The project is still in its infancy and is not yet hosted anywhere. No planned metrics or views require proprietary channel information so MogulMetrics will launch accessible to the general public.
 
 ## Roadmap
