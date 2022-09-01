@@ -26,7 +26,6 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
     const svgRef = React.useRef(null);
     var { width, height, margin } = dimensions;
     const svgWidth = width + margin.left + margin.right;
-    const svgHeight = height + margin.top + margin.bottom;
 
     const day_cols = {"Sunday": 0, "Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5,"Saturday": 6}
     const days= ["Su", "M", "T", "W", "Th", "F", "S"]
@@ -132,9 +131,10 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
 
       const svgEl = d3.select(svgRef.current);
       svgEl.selectAll("*").remove(); // Clear svg content before adding new elements 
+      console.log(`SETTING SVG DIMENSIONS TO WIDTH: ${width} HEIGHT: ${width}`)
       const svg = svgEl
         .attr("width", width)
-        .attr("height", height)
+        .attr("height", width * 0.8)
         .append("g")
          .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -249,7 +249,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
         
     }, [data]);
   
-    return <svg ref={svgRef} width={svgWidth} height={svgHeight} />;
+    return <svg ref={svgRef} />;
   
 }
 

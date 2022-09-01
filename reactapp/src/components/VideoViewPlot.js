@@ -60,8 +60,8 @@ const VideoViewPlot = ({ data, dimensions }) => {
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
         var x = d3.scaleLinear()
-            .domain(d3.extent(time_deltas))
-            .range([ 0, plot_width]);
+            .domain([0, 48])
+            .range([ 0, plot_width - 80]);
 
         svg.append("g")
             .attr("transform", "translate(0," + (height - margin.bottom) + ")")

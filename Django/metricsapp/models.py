@@ -12,6 +12,10 @@ class LiveStreams(models.Model):
     channel_name = models.TextField(blank=True, null=True)
     is_live = models.BooleanField(blank=True, null=True)
     log_time = models.DateTimeField(blank=True, null=True)
+    concurrent_viewers = models.IntegerField(blank=True, null=True)
+    video_id = models.TextField(blank=True, null=True)
+    stream_title = models.TextField(blank=True, null=True)
+    thumbnail_url = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'live_streams'

@@ -1,15 +1,32 @@
 from bs4 import BeautifulSoup
-import psycopg2
 import datetime
 import requests
 import requests
 import json
 import os
 
-CHANNELS = {"UCrPseYLGpNygVi34QpGNqpA": "Ludwig"}
-DB_NAME = "MOGUL_METRICS"
+from urllib.error import HTTPError
 
-pool = None
+import sqlalchemy
+import googleapiclient.discovery
+from sqlalchemy import create_engine
+from sqlalchemy import text, Table, MetaData
+
+channels = {"UCrPseYLGpNygVi34QpGNqpA": "Ludwig"}
+user = os.environ.get("DB_USERNAME")
+password = os.environ.get("DB_PASSWORD")
+hostname = os.environ.get("DB_HOST")
+database_name = os.environ.get("DB_NAME")
+port = os.environ.get("DB_PORT")
+cluster = os.environ.get("DB_CLUSTER")
+youtube_api_key = os.environ.get("YOUTUBE_API_KEY")
+
+def get_youtube_page(channel_id):
+    query_url = f"https://www.youtube.com/channel/{channel_id}/live"
+
+    r = requests.get(query_url)
+    soup = BeautifulSoup(r._content)
+    return soup
 
 def query_scheduled_status(soup):
     body = soup.find_all("body")[0]
@@ -29,11 +46,8 @@ def query_scheduled_status(soup):
         return None, None
 
 #Checks if a YouTube channel is live given an ID
-def is_channel_live(channel_id):
+def is_channel_live(soup, channel_id):
     query_url = f"https://www.youtube.com/channel/{channel_id}/live"
-
-    r = requests.get(query_url)
-    soup = BeautifulSoup(r._content)
     redirect = soup.find('link', {'rel': 'canonical'})["href"]
 
     stripped_query_url = query_url.split("/live")[0]
@@ -57,19 +71,56 @@ def lambda_handler(event, context):
     current_time = datetime.datetime.now(datetime.timezone.utc)
     current_time = datetime.datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S')
     
-    for channel_id in CHANNELS:
-        is_live = is_channel_live(channel_id)
-        print(channel_id, CHANNELS[channel_id], current_time, is_live)
-        
-        conn = psycopg2.connect(os.environ['DATABASE_URL'], sslmode="require")
+    engine = create_engine(f'cockroachdb://{user}:{password}@{hostname}:{port}/mogul_metrics?sslmode=require&options=--cluster={cluster}')
+    metadata_obj = MetaData()
+    
+    lsc = Table('livestream_scrape_channels', metadata_obj, autoload_with=engine)
+    query = sqlalchemy.select([lsc]) 
 
-        with conn.cursor() as cur:
-            cur.execute(
-                f"USE {DB_NAME}")
-            cur.execute(
-                f"INSERT INTO live_streams (CHANNEL_ID, CHANNEL_NAME, IS_LIVE, LOG_TIME) VALUES ('{channel_id}', '{CHANNELS[channel_id]}', '{is_live}', '{current_time}');"
+    with engine.connect() as conn:
+        try: 
+            result_proxy = conn.execute(query)
+            channel_set = result_proxy.fetchall()
+        except Exception as e:
+            return
+
+    for channel_id, channel_name in channel_set:
+        soup = get_youtube_page(channel_id)
+        is_live = is_channel_live(soup, channel_id)
+        print(channel_id, channel_name, current_time, is_live)
+        
+        concurrent_viewers = None
+        video_id = None
+        stream_title = None
+        thumbnail_png = None
+
+        if(is_live):
+            redirect = soup.find('link', {'rel': 'canonical'})["href"]
+            video_id = redirect.split("youtube.com/watch?v=")[1]
+            
+            api_service_name = "youtube"
+            api_version = "v3"
+            youtube = googleapiclient.discovery.build(api_service_name, api_version, developerKey = youtube_api_key)
+            request = youtube.videos().list(
+                part="snippet, liveStreamingDetails, statistics",
+                id=video_id
             )
-        conn.commit()
+        
+            try:
+                response = request.execute()
+                concurrent_viewers = response['items'][0]['liveStreamingDetails']['concurrentViewers']
+                video_id = response['items'][0]['id']
+                stream_title = response['items'][0]['snippet']['title']
+                thumbnail_png = response['items'][0]['snippet']['thumbnails']['default']['url']
+            except HTTPError as e:
+                response = None
+
+        live_streams_table = Table('live_streams', metadata_obj, autoload_with=engine)
+        
+        stmt = live_streams_table.insert().values(channel_id=channel_id, channel_name=channel_name, is_live=is_live ,log_time=current_time, concurrent_viewers=concurrent_viewers, video_id=video_id, stream_title=stream_title, thumbnail_url=thumbnail_png)
+
+        with engine.connect() as conn:
+            res = conn.execute(stmt)
 
     return
 

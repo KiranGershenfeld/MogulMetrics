@@ -18,7 +18,7 @@ const AboutPage = () => {
                     Mogul Metrics is an <a href='https://github.com/KiranGershenfeld/MogulMetrics' target='_blank'>open source</a> project mainly built by <a href='https://www.linkedin.com/in/kirangershenfeld/' target='_blank'>Kiran Gershenfeld</a>. Check out my other projects including the popular <a href='https://www.reddit.com/r/LivestreamFail/comments/mu8nyp/twitch_atlas_vol_3/' target='_blank'>Twitch</a> and <a href='https://youtubeatlas.com' target='_blank'>YouTube</a> Atlas maps on my <a href="https://github.com/KiranGershenfeld">Github</a>! Sorry for any usability issues, web development is not my strong suit.  
                     <br></br>
                     <br></br>
-                    <b>The world of content creation is regulated by data driven algorithms and understanding this data can be a tool for consistent growth across platforms.</b>
+                    The world of content creation is regulated by data driven algorithms and I feel that understanding this data can be a tool for consistent growth across platforms.
                     <br></br>
                     <br></br>
                     Contact me at <a href='mailto:kiran@gershenfeld.org' target='_blank'>kiran@gershenfeld.org</a> with any inquiries, questions, requests, or concerns

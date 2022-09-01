@@ -9,7 +9,7 @@ import MogulNavBar from './Navbar'
 import Select from 'react-select'
 import Card from 'react-bootstrap/Card';
 import ProfilePhoto from '../static/ludwigprofile.jpg' // relative path to image 
-
+import StreamsTable from './StreamsTable';
 
 const API_URL = config.url.API_URL
 
@@ -41,7 +41,7 @@ export default class AppContainer extends React.Component {
     state = {
         data: [],
         dimensions: {
-          "height": 800,
+          "height": 600,
           "width": 500,
           "margin": {
             "left": 0,
@@ -51,7 +51,8 @@ export default class AppContainer extends React.Component {
           }
         },
         month: "",
-        topline_metrics: {}
+        topline_metrics: {},
+        streamsTableData: []
     };
 
     set_selected_month(month_index, year)
@@ -60,6 +61,7 @@ export default class AppContainer extends React.Component {
       var lastDay = new Date(year, month_index + 1, 1);
       axios.get(`${API_URL}/api/all_livestreams`, { 
           params: {
+            channel_id : "UCrPseYLGpNygVi34QpGNqpA",
             min_date_inclusive: firstDay.toISOString(),
             max_date_exclusive:  lastDay.toISOString(),
           }
@@ -70,10 +72,19 @@ export default class AppContainer extends React.Component {
         })
           .then(res => {
             var data = []
+            console.log(typeof(res.data))
             if(Object.keys(res.data).length === 0)
             {
               this.setState({data: {}});
               this.setState({topline_metrics: {}})
+            }
+            if(!("daily_hours" in res.data))
+            {
+              this.setState({data: {}});
+            }
+            if(!("topline" in res.data))
+            {
+              this.setState({topline_metrics: {}});
             }
 
             for (const [iso_string, hours] of Object.entries(res.data["daily_hours"])) {
@@ -90,11 +101,34 @@ export default class AppContainer extends React.Component {
         this.state.month = "0"+ this.state.month
       }
       this.state.dimensions.width = document.getElementById("chart-container").offsetWidth
+
     }
     
     componentDidMount() {
-     
       var month = new Date().getMonth()
+
+      axios.get(`${API_URL}/api/stream_table`, { 
+        params: {
+          channel_id: "UCrPseYLGpNygVi34QpGNqpA",
+          min_date_inclusive: new Date(2022, 7, 30),
+          max_date_exclusive: new Date(year, month + 1, 1)
+        }
+      },{
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => {
+          if(Object.keys(res.data).length === 0)
+          {
+            this.setState({streamsTableData: []});
+          }
+          else{
+            this.setState({streamsTableData: res.data})
+          }
+        });
+
+     
       this.set_selected_month(month, year)
 
     }
@@ -114,7 +148,7 @@ export default class AppContainer extends React.Component {
                       Ludwig
                     </div>
                     <div style={{"fontSize": "13px", "color": "grey"}}>
-                      3.3M Subscribers
+                      3.4M Subscribers
                     </div>
                   </div>
                 </div>
@@ -167,6 +201,9 @@ export default class AppContainer extends React.Component {
             </div>
           </div>
         </div>
+        <div className="streamstable-container">
+              <StreamsTable data={this.state.streamsTableData.slice(0, 10)}/>
+            </div>
       </div>
       );
     }

@@ -6,12 +6,16 @@ from xmlrpc.client import boolean
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 from metricsapp.serializers import LiveStreamsSerializer, VideoLifecycleSerializer
 from metricsapp.models import LiveStreams, VideoLifecycle
 import logging;
 import pandas as pd
 import datetime
 import time
+from itertools import groupby
+
 
 logging.basicConfig(filename='django_views.log', level=logging.DEBUG)
 logging.info("Logging initialized")
@@ -23,7 +27,7 @@ def get_daily_hours_streamed(df):
     
     df_aggreagtes = pd.DataFrame()
     df_aggreagtes["streamed_hours"] = df.resample("1D")["is_live"].apply(lambda x: (x == True).sum() / 6)
-    logging.info("AFTER AGG")
+    # logging.info("AFTER AGG")
     # logging.info(df_aggreagtes.head(5))
     # df_aggreagtes = df_aggreagtes.reset_index()
     # df_aggreagtes["date"] = df_aggreagtes["log_time"].dt
@@ -33,6 +37,79 @@ def get_daily_hours_streamed(df):
 
     return df_aggreagtes
 
+def get_stream_aggregates(df):
+    df["log_time"] = df["log_time"].dt.tz_localize("UTC").dt.tz_convert("US/Pacific")
+    df = df.sort_values("log_time")
+
+    is_live_markers = list(zip(df.is_live, df.index))
+    grouped = [list(g) for k,g in groupby(is_live_markers, lambda x: x[0]) if k]
+    indices = [(min(m)[1], max(m)[1])for m in grouped]
+    
+    logging.info(f"stream start and stop indices: {indices}")
+
+    aggs = []
+    for stream_start_index, stream_end_index in indices:
+        stream = {}
+        stream_df = df.loc[stream_start_index:stream_end_index]
+        stream['start'] = stream_df.iloc[0]['log_time']
+        stream['end'] = stream_df.iloc[-1]['log_time']
+        stream['hours'] = (stream_df.iloc[-1]['log_time'] - stream_df.iloc[0]['log_time']).total_seconds() / 60 / 60
+        stream['title'] = stream_df.iloc[0]['stream_title']
+        stream['thumbnail_url'] = stream_df.iloc[0]['thumbnail_url']
+        stream['video_id'] = stream_df.iloc[0]['video_id']
+
+        stream["avg_viewers"] = stream_df.concurrent_viewers.mean()
+        stream["min_viewers"] = stream_df.concurrent_viewers.min()
+        stream["max_viewers"] = stream_df.concurrent_viewers.max()
+
+        for key, value in stream.items():
+            if(pd.isna(value)):
+                stream[key] = None
+
+        aggs.append(stream)
+
+    aggs = pd.DataFrame(aggs)
+    
+    logging.info(aggs.head())
+    return aggs
+
+@api_view(['GET'])
+def is_live(request):
+    channel_id = request.query_params["channel_id"]
+    
+    obj = LiveStreams.objects.filter(channel_id=channel_id).latest('log_time')
+
+    logging.info(f"is_live request for {channel_id} returned {obj}")
+    ser = LiveStreamsSerializer(obj)
+    logging.info(f"serialized data is {ser}")
+    return Response(ser.data) 
+
+@api_view(['GET'])
+def stream_table(request):
+    logging.info("Stream table request")
+    channel_id = request.query_params["channel_id"]
+    min_date = request.query_params["min_date_inclusive"]
+    max_date = request.query_params["max_date_exclusive"]
+    query = LiveStreams.objects.filter(
+        channel_id = channel_id
+    ).filter(
+        log_time__gte = datetime.datetime.strptime(min_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+    ).filter(
+        log_time__lt = datetime.datetime.strptime(max_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+    )
+    df = pd.DataFrame.from_records(query.values())
+    if df.empty:
+        return JsonResponse({}, safe=False)
+
+    aggs = get_stream_aggregates(df)
+
+    logging.info("POST NAN PROCESSING: ")
+    logging.info(aggs)
+
+    data = aggs.to_dict('records')
+    # data = json.loads(aggs.to_json(date_format="iso"))
+    return JsonResponse(data=data, safe=False)
+
 @api_view(["GET"])
 def all_livestreams(request):
     logging.info("all livestreams request made with data: ")
@@ -40,6 +117,8 @@ def all_livestreams(request):
     #These dates come in in GMT 
     min_date = request.query_params["min_date_inclusive"]
     max_date = request.query_params["max_date_exclusive"]
+    channel_id = request.query_params["channel_id"]
+
     logging.info("QUERY PARAMS MIN DATE:")
     logging.info(min_date)
     logging.info("QUERY PARAMS MAX DATE:")
@@ -47,6 +126,8 @@ def all_livestreams(request):
 
     # query = Livestreams.objects.all().using("mogul_metrics")
     query = LiveStreams.objects.filter(
+        channel_id = channel_id
+    ).filter(   
         log_time__gte = datetime.datetime.strptime(min_date, "%Y-%m-%dT%H:%M:%S.%fZ")
     ).filter(
         log_time__lt = datetime.datetime.strptime(max_date, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -57,10 +138,16 @@ def all_livestreams(request):
         return JsonResponse({}, safe=False)
 
     dhs_df = get_daily_hours_streamed(df)
+
     topline_metrics = {}
     topline_metrics["monthly_hours_streamed"] = dhs_df["streamed_hours"].sum()
     topline_metrics["average_daily_hours"] = dhs_df["streamed_hours"].mean()
     topline_metrics["average_stream_length"] = dhs_df[dhs_df["streamed_hours"] != 0]["streamed_hours"].mean()
+
+    for key, value in topline_metrics.items():
+            if(pd.isna(value)):
+                topline_metrics[key] = None
+
     live_data = json.loads(dhs_df.to_json(date_format="iso"))["streamed_hours"]
     json_data = {}
     json_data["daily_hours"] = live_data

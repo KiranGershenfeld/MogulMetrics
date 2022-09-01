@@ -2,6 +2,8 @@
 {
     margin: auto;
     width: 40%;
+    min-width: 400px;
+
 }
 .monthly-metrics-section
 {
@@ -19,6 +21,14 @@
     padding-top: 25px;
     margin: auto;
     width: 60%;
+}
+.streamstable-container
+{
+    margin: auto;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    width: 60%;
+    min-width: 500px;
 }
 .metrics-card
 {
@@ -68,4 +78,10 @@ ul li {
 }
 a {
     text-decoration: none !important;
+}
+
+.table-thumbnail
+{
+    width: 150px;
+    height: 84px;
 }

@@ -66,11 +66,16 @@ export default class LifecycleContainer extends React.Component {
   }
 
   componentDidMount() {
+    var scrapeStartDate = new Date(2022, 7, 25)
+    console.log(scrapeStartDate)
     var currDate = new Date()
-    var monthPrevdate = new Date();
-    monthPrevdate.setMonth(monthPrevdate.getMonth() - 1);
-    console.log(monthPrevdate)
-    this.query_videos('UCz6XquIbM5OcfK7r3hQQCXA', monthPrevdate, currDate)
+    var prevDate = new Date();
+    prevDate.setDate(prevDate.getDate() - 30);
+    if(prevDate < scrapeStartDate){
+      prevDate = scrapeStartDate
+    }
+    console.log(prevDate)
+    this.query_videos('UCz6XquIbM5OcfK7r3hQQCXA', prevDate, currDate)
   }
 
   render() {
