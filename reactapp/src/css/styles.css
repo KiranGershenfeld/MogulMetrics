@@ -85,3 +85,21 @@ a {
     width: 150px;
     height: 84px;
 }
+.about-heading
+{
+    font-size: 24px;
+    font-weight: 500;
+}
+.about-heading-small
+{
+    font-size: 20px;
+    font-weight: 500;
+}
+.about-spacer
+{
+    height: 20px;
+}
+.about-spacer-small
+{
+    height: 10px;
+}
