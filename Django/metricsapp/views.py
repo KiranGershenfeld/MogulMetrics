@@ -8,7 +8,7 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from metricsapp.serializers import LiveStreamsSerializer, VideoLifecycleSerializer
+from metricsapp.serializers import LiveStreamsSerializer, VideoLifecycleSerializer, VideoLifecycleChannelsSerializer
 from metricsapp.models import LiveStreams, VideoLifecycle
 import logging;
 import pandas as pd
@@ -24,9 +24,16 @@ def get_daily_hours_streamed(df):
 
     utc_offset = time.localtime().tm_gmtoff / (60 * 60)
     df = df.set_index(df["log_time"].dt.tz_localize("UTC").dt.tz_convert("US/Pacific"))
-    
+
+    is_live_markers = list(zip(df.is_live, df.index))
+    grouped = [list(g) for k,g in groupby(is_live_markers, lambda x: x[0]) if k]
+    indices = [(min(m)[1], max(m)[1])for m in grouped]
+    stream_hours = [{"stream_hours": (tup[1] - tup[0]).total_seconds() / 60 / 60, "date": tup[0]} for tup in indices]
+
+    hours_df = pd.DataFrame(stream_hours)
+    hours_df = hours_df.set_index('date')
     df_aggreagtes = pd.DataFrame()
-    df_aggreagtes["streamed_hours"] = df.resample("1D")["is_live"].apply(lambda x: (x == True).sum() / 6)
+    df_aggreagtes["streamed_hours"] = hours_df.resample("1D")["stream_hours"].sum()
     # logging.info("AFTER AGG")
     # logging.info(df_aggreagtes.head(5))
     # df_aggreagtes = df_aggreagtes.reset_index()
@@ -155,6 +162,21 @@ def all_livestreams(request):
     logging.info(json_data)
 
     return JsonResponse(json_data, safe=False)
+
+@api_view(["GET"])
+def lifecycle_channels(request):
+    return
+#     obj = VideoLifecycle.objects \
+#     .filter(log_time__gte = '2022-08-31 00:00:00') \
+#     .order_by('channel_id') \
+#     .values_list('channel_id', 'channel_name') \
+#     .distinct()
+
+#     logging.info(obj)
+
+#     ser = VideoLifecycleChannelsSerializer(obj)
+
+#     return Response(ser.data) 
 
 @api_view(["GET"])
 def video_lifecycle(request):

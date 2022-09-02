@@ -61,7 +61,7 @@ function createData(name, calories, fat, carbs, protein) {
                 <TableCell align="center">{getMonthDay(row.start)}</TableCell>
                 <TableCell align="center">{row.title}</TableCell>
                 <TableCell align="center">{row.hours.toFixed(2)}</TableCell>
-                <TableCell align="center">{row.avg_viewers}</TableCell>
+                <TableCell align="center">{row.avg_viewers.toFixed(0)}</TableCell>
                 <TableCell align="center">{row.min_viewers}</TableCell>
                 <TableCell align="center">{row.max_viewers}</TableCell>
 

@@ -170,7 +170,7 @@ export default class AppContainer extends React.Component {
                 <span className='metrics-title'>Hours Streamed</span>
                 <div>
                   <span className='metrics-metric'>
-                      {parseFloat(this.state.topline_metrics.monthly_hours_streamed).toFixed(1)}
+                      {parseFloat(this.state.topline_metrics.monthly_hours_streamed).toFixed(2)}
                   </span>
                 </div>
                 </Card.Body>
