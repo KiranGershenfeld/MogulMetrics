@@ -26,9 +26,12 @@ def get_daily_hours_streamed(df):
     df = df.set_index(df["log_time"].dt.tz_localize("UTC").dt.tz_convert("US/Pacific"))
 
     is_live_markers = list(zip(df.is_live, df.index))
-    grouped = [list(g) for k,g in groupby(is_live_markers, lambda x: x[0]) if k]
-    indices = [(min(m)[1], max(m)[1])for m in grouped]
-    stream_hours = [{"stream_hours": (tup[1] - tup[0]).total_seconds() / 60 / 60, "date": tup[0]} for tup in indices]
+    grouped = [list(g) for k,g in groupby(is_live_markers, lambda x: x[0])]
+    logging.info("GROUPED")
+    indices = [(m[0][0], min(m)[1], max(m)[1])for m in grouped]
+    logging.info("DAILY HOURS INDICES")
+    logging.info(indices)
+    stream_hours = [{"stream_hours": (g[2] - g[1]).total_seconds() / 60 / 60, "date": g[1]} if g[0] else {"stream_hours": 0, "date": g[1]} for g in indices]
 
     hours_df = pd.DataFrame(stream_hours)
     hours_df = hours_df.set_index('date')
@@ -52,7 +55,7 @@ def get_stream_aggregates(df):
     grouped = [list(g) for k,g in groupby(is_live_markers, lambda x: x[0]) if k]
     indices = [(min(m)[1], max(m)[1])for m in grouped]
     
-    logging.info(f"stream start and stop indices: {indices}")
+    # logging.info(f"stream start and stop indices: {indices}")
 
     aggs = []
     for stream_start_index, stream_end_index in indices:
