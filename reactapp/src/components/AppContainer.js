@@ -1,5 +1,7 @@
 import React from 'react';
 import axios from 'axios';
+import { CSVLink, CSVDownload } from "react-csv";
+
 import '../css/styles.css'
 import CalendarD3 from './CalendarD3';
 import * as moment from "moment"
@@ -52,7 +54,8 @@ export default class AppContainer extends React.Component {
         },
         month: "",
         topline_metrics: {},
-        streamsTableData: []
+        streamsTableData: [],
+        csvData: []
     };
 
     set_selected_month(month_index, year)
@@ -125,6 +128,7 @@ export default class AppContainer extends React.Component {
           }
           else{
             this.setState({streamsTableData: res.data})
+            this.setState({csvData: res.data})
           }
         });
 
@@ -202,6 +206,8 @@ export default class AppContainer extends React.Component {
           </div>
         </div>
         <div className="streamstable-container">
+              <CSVLink data={this.state.csvData}>CSV Download</CSVLink>
+              <div style={{"height": "10px"}}></div>
               <StreamsTable data={this.state.streamsTableData.slice(0, 10)}/>
             </div>
       </div>
