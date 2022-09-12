@@ -31,12 +31,21 @@ def get_daily_hours_streamed(df):
     indices = [(m[0][0], min(m)[1], max(m)[1])for m in grouped]
     logging.info("DAILY HOURS INDICES")
     logging.info(indices)
-    stream_hours = [{"stream_hours": (g[2] - g[1]).total_seconds() / 60 / 60, "date": g[1]} if g[0] else {"stream_hours": 0, "date": g[1]} for g in indices]
 
+    stream_hours = [{"stream_hours": (g[2] - g[1]).total_seconds() / 60 / 60, "start_date": g[1], "end_date": g[2]} if g[0] else {"stream_hours": 0, "start_date": g[1], "end_date": g[2]} for g in indices]
     hours_df = pd.DataFrame(stream_hours)
-    hours_df = hours_df.set_index('date')
+
+    last_date = hours_df.iloc[-1]["end_date"]
+    hours_df.loc[len(hours_df.index)] = {"stream_hours": 0, "start_date": last_date,"end_date": last_date}
+
+    hours_df = hours_df.set_index('start_date')
+    logging.info(hours_df.tail(10))
+
+
     df_aggreagtes = pd.DataFrame()
     df_aggreagtes["streamed_hours"] = hours_df.resample("1D")["stream_hours"].sum()
+    logging.info(df_aggreagtes.tail(10))
+
     # logging.info("AFTER AGG")
     # logging.info(df_aggreagtes.head(5))
     # df_aggreagtes = df_aggreagtes.reset_index()
