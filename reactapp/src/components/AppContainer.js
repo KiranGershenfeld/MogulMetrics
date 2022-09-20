@@ -208,7 +208,7 @@ export default class AppContainer extends React.Component {
         <div className="streamstable-container">
               <CSVLink data={this.state.csvData}>CSV Download</CSVLink>
               <div style={{"height": "10px"}}></div>
-              <StreamsTable data={this.state.streamsTableData.slice(0, 10)}/>
+              <StreamsTable data={this.state.streamsTableData}/>
             </div>
       </div>
       );

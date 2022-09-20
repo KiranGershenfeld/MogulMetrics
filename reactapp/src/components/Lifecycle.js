@@ -32,6 +32,7 @@ export default class LifecycleContainer extends React.Component {
           "bottom": 50,
         }
       },
+      selectOptions: [],
   };
 
   query_videos(channel_id, start_date, end_date)
@@ -83,6 +84,11 @@ export default class LifecycleContainer extends React.Component {
       <div>
         <MogulNavBar />
         <div style={{margin: "auto", marginTop: "25px", width: "30%", textAlign:"center"}}>
+          <Select
+                options={[]}
+                defaultValue={[]}
+                onChange={(e) => {}}
+          />
             <div >Video View Lifecycle for <span style={{fontWeight: "bold"}}>Ludwin Clips</span></div>
         </div>
         <div style={{margin: "auto", marginTop: "15px", marginBottom: "25px", width: "50%", textAlign:"center"}}>
