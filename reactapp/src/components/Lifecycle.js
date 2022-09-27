@@ -84,18 +84,16 @@ export default class LifecycleContainer extends React.Component {
       <div>
         <MogulNavBar />
         <div style={{margin: "auto", marginTop: "25px", width: "30%", textAlign:"center"}}>
-          <Select
-                options={[]}
-                defaultValue={[]}
-                onChange={(e) => {}}
-          />
-            <div >Video View Lifecycle for <span style={{fontWeight: "bold"}}>Ludwin Clips</span></div>
+            <div >Video View Lifecycle In Development</div>
         </div>
         <div style={{margin: "auto", marginTop: "15px", marginBottom: "25px", width: "50%", textAlign:"center"}}>
-            <div >This chart shows the view count of videos at a given time after its upload. It demonstrates how the algorithm is recommending videos across their lifecycle</div>
+          {
+            //<div >This chart shows the view count of videos at a given time after its upload. It demonstrates how the algorithm is recommending videos across their lifecycle</div>
+          }
         </div>
         <div className="video-chart-container" id="video-chart-container">
-          <VideoViewPlot data={this.state.data} dimensions={this.state.dimensions} />
+          {//<VideoViewPlot data={this.state.data} dimensions={this.state.dimensions} />
+          }
         </div>
       </div>
     );
