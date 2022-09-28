@@ -146,6 +146,13 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'http://localhost:8000',
+    'https://earnest-crostata-9ec741.netlify.app',
+]
 
-ALLOWED_HOSTS=['localhost', 'ec2-18-191-182-112.us-east-2.compute.amazonaws.com']
+CORS_ALLOWED_ORIGINS = [
+    'https://earnest-crostata-9ec741.netlify.app',
+    'http://localhost:3000',
+]

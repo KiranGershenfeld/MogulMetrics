@@ -5,7 +5,8 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link
+  Link,
+  Navigate,
 } from 'react-router-dom';
 
 function App() {
@@ -16,7 +17,8 @@ function App() {
           <title>Mogul Metrics</title>
           <div className="page-content">
             <Routes> 
-              <Route exact path='/' exact element={<AppContainer/>} />
+              <Route exact path='/' exact element={ <Navigate to={'/main?channel_id=UCrPseYLGpNygVi34QpGNqpA'} />} />
+              <Route exact path='/main' exact element={ <AppContainer />} />
               <Route exact path='videolifecycle' exact element={<LifecycleContainer/>} />
               <Route exact path='about' exact element={<AboutPage/>} />
             </Routes>
