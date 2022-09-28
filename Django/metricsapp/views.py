@@ -8,8 +8,8 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from metricsapp.serializers import LiveStreamsSerializer, VideoLifecycleSerializer, VideoLifecycleChannelsSerializer
-from metricsapp.models import LiveStreams, VideoLifecycle
+from metricsapp.serializers import LiveStreamsSerializer, VideoLifecycleSerializer, VideoLifecycleChannelsSerializer, LiveStreamChannelSerializer
+from metricsapp.models import LiveStreams, VideoLifecycle, LiveStreamChannel
 import logging;
 import pandas as pd
 import datetime
@@ -178,17 +178,21 @@ def all_livestreams(request):
 @api_view(["GET"])
 def lifecycle_channels(request):
     return
-#     obj = VideoLifecycle.objects \
-#     .filter(log_time__gte = '2022-08-31 00:00:00') \
-#     .order_by('channel_id') \
-#     .values_list('channel_id', 'channel_name') \
-#     .distinct()
 
-#     logging.info(obj)
+@api_view(["GET"])
+def all_stream_channels(request):
+    obj = LiveStreamChannel.objects.all()
 
-#     ser = VideoLifecycleChannelsSerializer(obj)
+    df = pd.DataFrame.from_records(obj.values())
+    df = df.sort_values(by="log_time").drop_duplicates(subset=["channel_id"], keep="last")
+    logging.info(df.head())
 
-#     return Response(ser.data) 
+    data = json.loads(df.to_json(orient='records', date_format="iso"))
+
+    return JsonResponse(data, safe=False)
+
+
+    return Response(ser.data) 
 
 @api_view(["GET"])
 def video_lifecycle(request):

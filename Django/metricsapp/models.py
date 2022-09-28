@@ -40,6 +40,18 @@ class VideoLifecycle(models.Model):
         unique_together = (('video_id', 'record_timestamp'),)
         db_table = 'video_view_lifecycle'
 
+class LiveStreamChannel(models.Model):
+    channel_id = models.CharField(max_length=256, primary_key=True)
+    channel_name = models.TextField(blank=True, null=True)
+    thumbnail_url = models.TextField(blank=True, null=True)
+    subscriber_count = models.IntegerField(blank=True, null=True)
+    log_time = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'livestream_scrape_channels'
+
+
 class GeographyColumns(models.Model):
     f_table_catalog = models.TextField(blank=True, null=True)  # This field type is a guess.
     f_table_schema = models.TextField(blank=True, null=True)  # This field type is a guess.
