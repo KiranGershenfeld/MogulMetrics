@@ -1,15 +1,21 @@
 import React from "react";
+import {config} from '../constants'
+
 import { css } from "@emotion/css";
 import MenuIcon from '../static/menu_icon.png'
 import { Link } from "react-router-dom";
+import axios from 'axios';
+const API_URL = config.url.API_URL
 
 const easeSlow = css`
   transition: all 450ms ease-in-out;
 `;
 
 const divider = css`
-    margin: 0;
-    width: 80%;
+    margin: auto;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    width: 70%;
     height: 0px !important;
     background-color: white;
     border-top: 1px solid white;
@@ -69,13 +75,42 @@ const menuOverlay = css`
 
 class Menu extends React.Component {
   state = {
-    isMenuOpen: false
+    isMenuOpen: false,
+    channels: [],
   };
+
+  componentDidMount()
+  {
+    axios.get(`${API_URL}/api/all_stream_channels`, { 
+    },{
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(res => {
+        if(Object.keys(res.data).length === 0)
+        {
+          this.setState({channels: []});
+        }
+        else{
+          this.setState({channels: res.data})
+          console.log(`CHANNELS STATE ${this.state.channels}`)
+        }
+      });
+  }
 
   toggleMenu = () =>
     this.setState(({ isMenuOpen }) => ({ isMenuOpen: !isMenuOpen }));
 
   render() {
+    var channel_links = this.state.channels.map(function(channel)
+    {
+      return <div style={{'width': '100%', 'textAlign': 'center'}}>
+                <Link style={{'fontSize': '1.15em', 'letterSpacing': '0.05rem'}} to={`/?channel_id=${channel.channel_id}`} onClick={() => { window.location.href(`/?channel_id=${channel.channel_id}`) }}> {channel.channel_name.toUpperCase()}</Link>
+                <hr className={`${divider}`} />
+              </div>
+    });
+  
     const { isMenuOpen } = this.state;
     return (
       <React.Fragment>
@@ -88,11 +123,8 @@ class Menu extends React.Component {
         </div>
         <div className={`${menuOverlay} ${isMenuOpen ? "show" : null}`}>
           <nav>
-            <Link to={"/"}>LIVESTREAM CALENDAR</Link>
-            <hr className={`${divider}`} />
-            <Link to={"/videolifecycle"}>VIDEO LIFECYCLE</Link>
-            <hr className={`${divider}`} />
-            <Link to={"/about"}>ABOUT</Link>
+            {channel_links}
+            <Link style={{'paddingTop': '0px', 'fontSize': '1.15em', 'letterSpacing': '0.05rem'}} to={"/about"}>ABOUT</Link>
           </nav>
         </div>
       </React.Fragment>

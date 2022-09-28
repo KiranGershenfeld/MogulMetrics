@@ -195,6 +195,18 @@ def all_stream_channels(request):
     return Response(ser.data) 
 
 @api_view(["GET"])
+def streamer_info(request):
+    channel_id = request.query_params["channel_id"]
+
+    qs = LiveStreamChannel.objects.filter(
+        channel_id = channel_id
+    ).order_by('-log_time')[0]
+
+    ser = LiveStreamChannelSerializer(qs)
+
+    return Response(ser.data)
+
+@api_view(["GET"])
 def video_lifecycle(request):
     logging.info("video lifecycle request!")
     channel_id = request.query_params["channel_id"]

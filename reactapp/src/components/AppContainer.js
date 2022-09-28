@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { CSVLink, CSVDownload } from "react-csv";
+import numeral from 'numeral'
 
 import '../css/styles.css'
 import CalendarD3 from './CalendarD3';
@@ -55,16 +56,17 @@ export default class AppContainer extends React.Component {
         month: "",
         topline_metrics: {},
         streamsTableData: [],
-        csvData: []
+        csvData: [],
+        channel_info: {},
     };
 
-    set_selected_month(month_index, year)
+    set_selected_month(channel_id, month_index, year)
     {
       var firstDay = new Date(year, month_index, 1);
       var lastDay = new Date(year, month_index + 1, 1);
       axios.get(`${API_URL}/api/all_livestreams`, { 
           params: {
-            channel_id : "UCrPseYLGpNygVi34QpGNqpA",
+            channel_id : channel_id,
             min_date_inclusive: firstDay.toISOString(),
             max_date_exclusive:  lastDay.toISOString(),
           }
@@ -108,11 +110,34 @@ export default class AppContainer extends React.Component {
     }
     
     componentDidMount() {
+      var urlParams = new URLSearchParams(window.location.search)
+      var channel_id = urlParams.get('channel_id')
+
+      axios.get(`${API_URL}/api/streamer_info`, { 
+        params: {
+          channel_id: channel_id,
+        }
+      },{
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => {
+          if(Object.keys(res.data).length === 0)
+          {
+            this.setState({channel_info: {}});
+          }
+          else{
+            this.setState({channel_info: res.data})
+            console.log(`CHANNEL STATE INFO ${this.state.channel_info}`)
+          }
+        });
+
       var month = new Date().getMonth()
 
       axios.get(`${API_URL}/api/stream_table`, { 
         params: {
-          channel_id: "UCrPseYLGpNygVi34QpGNqpA",
+          channel_id: channel_id,
           min_date_inclusive: new Date(2022, 7, 30),
           max_date_exclusive: new Date(year, month + 1, 1)
         }
@@ -133,7 +158,7 @@ export default class AppContainer extends React.Component {
         });
 
      
-      this.set_selected_month(month, year)
+      this.set_selected_month(channel_id, month, year)
 
     }
 
@@ -146,13 +171,13 @@ export default class AppContainer extends React.Component {
             <Card className= "channel-card d-flex vertical-center" style={{"marginTop": "10px", "padding": "1px 1px 1px 1px"}}>
               <Card.Body>
                 <div style={{"display": "flex", "justifyContent": "center", "alignItems": "center"}}>
-                  <img src={ProfilePhoto} alt="Profile" style={{"borderRadius": "50%", "width": "15%", "flexGrow": "1"}}></img>
+                  <img src={this.state.channel_info.thumbnail_url} alt="Profile" style={{"borderRadius": "50%", "width": "15%", "flexGrow": "1"}}></img>
                   <div style={{"flexGrow": "1", "width": "85%", "marginLeft": "15px", "fontSize": "20px", "fontWeight": "450"}}>
                     <div>
-                      Ludwig
+                      {this.state.channel_info.channel_name}
                     </div>
                     <div style={{"fontSize": "13px", "color": "grey"}}>
-                      3.4M Subscribers
+                      {numeral(this.state.channel_info.subscriber_count).format('0.0a')} Subscribers
                     </div>
                   </div>
                 </div>
@@ -206,7 +231,7 @@ export default class AppContainer extends React.Component {
           </div>
         </div>
         <div className="streamstable-container">
-              <CSVLink data={this.state.csvData}>CSV Download</CSVLink>
+              <CSVLink data={this.state.csvData} filename={`${this.state.channel_info.channel_name}_${this.state.month}_stream_metrics`}>CSV Download</CSVLink>
               <div style={{"height": "10px"}}></div>
               <StreamsTable data={this.state.streamsTableData}/>
             </div>

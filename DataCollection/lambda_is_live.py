@@ -75,7 +75,7 @@ def lambda_handler(event, context):
     metadata_obj = MetaData()
     
     lsc = Table('livestream_scrape_channels', metadata_obj, autoload_with=engine)
-    query = sqlalchemy.select([lsc]) 
+    query = sqlalchemy.select(lsc.c.channel_id, lsc.c.channel_name).distinct()
 
     with engine.connect() as conn:
         try: 
