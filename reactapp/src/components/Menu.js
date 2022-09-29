@@ -106,7 +106,7 @@ class Menu extends React.Component {
     var channel_links = this.state.channels.map(function(channel)
     {
       return <div style={{'width': '100%', 'textAlign': 'center'}}>
-                <Link style={{'fontSize': '1.15em', 'letterSpacing': '0.05rem'}} to={`/?channel_id=${channel.channel_id}`} onClick={() => { window.location.href(`/?channel_id=${channel.channel_id}`) }}> {channel.channel_name.toUpperCase()}</Link>
+                <Link style={{'fontSize': '1.15em', 'letterSpacing': '0.05rem'}} to={`/main?channel_id=${channel.channel_id}`} onClick={() => { window.location.href(`/main?channel_id=${channel.channel_id}`) }}> {channel.channel_name.toUpperCase()}</Link>
                 <hr className={`${divider}`} />
               </div>
     });
