@@ -37,7 +37,8 @@ def query_scheduled_status(soup):
     if(stream_status == "LIVE_STREAM_OFFLINE"):
         try:
             scheduled_time = response["playabilityStatus"]["liveStreamability"]["liveStreamabilityRenderer"]["offlineSlate"]["liveStreamOfflineSlateRenderer"]["scheduledStartTime"]
-            return True, datetime.datetime.fromtimestamp(scheduled_time)
+            print(scheduled_time)
+            return True, datetime.datetime.fromtimestamp(int(scheduled_time))
         except KeyError as e:
             return None, None
     elif(stream_status == "OK"):
@@ -75,7 +76,7 @@ def lambda_handler(event, context):
     metadata_obj = MetaData()
     
     lsc = Table('livestream_scrape_channels', metadata_obj, autoload_with=engine)
-    query = sqlalchemy.select(lsc.c.channel_id, lsc.c.channel_name).distinct()
+    query = sqlalchemy.select(lsc.c.channel_id, lsc.c.channel_name).distinct(lsc.c.channel_id).filter(lsc.c.channel_name.isnot(None))
 
     with engine.connect() as conn:
         try: 

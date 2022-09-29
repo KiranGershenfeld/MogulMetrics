@@ -181,7 +181,7 @@ def lifecycle_channels(request):
 
 @api_view(["GET"])
 def all_stream_channels(request):
-    obj = LiveStreamChannel.objects.all()
+    obj = LiveStreamChannel.objects.exclude(channel_name__isnull=True)
 
     df = pd.DataFrame.from_records(obj.values())
     df = df.sort_values(by="log_time").drop_duplicates(subset=["channel_id"], keep="last")

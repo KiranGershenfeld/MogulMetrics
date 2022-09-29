@@ -34,7 +34,7 @@ if __name__ == '__main__':
     metadata_obj = MetaData()
 
     lsc = Table('livestream_scrape_channels', metadata_obj, autoload_with=engine)
-    query = sqlalchemy.select(lsc.c.channel_id)
+    query = sqlalchemy.select(lsc.c.channel_id).distinct()
 
     with engine.connect() as conn:
         try: 
