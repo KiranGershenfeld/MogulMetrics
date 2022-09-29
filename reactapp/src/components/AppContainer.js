@@ -62,7 +62,9 @@ export default class AppContainer extends React.Component {
 
     set_selected_month(channel_id, month_index, year)
     {
+      console.log(`MONTH IS ${month_index}`)
       var firstDay = new Date(year, month_index, 1);
+      console.log(`FIRST DAY ${firstDay}`)
       var lastDay = new Date(year, month_index + 1, 1);
       axios.get(`${API_URL}/api/all_livestreams`, { 
           params: {
@@ -157,8 +159,8 @@ export default class AppContainer extends React.Component {
           }
         });
 
-     
-      this.set_selected_month(channel_id, month, year)
+        console.log("BEFORE SET SELECTED MONTH")
+        this.set_selected_month(channel_id, month, year)
 
     }
 
@@ -190,7 +192,7 @@ export default class AppContainer extends React.Component {
               <Select
                 options={options}
                 defaultValue={{ value: new Date().getMonth(), label: monthNames[new Date().getMonth()]}}
-                onChange={(e) => this.set_selected_month(e.value, year)}
+                onChange={(e) => this.set_selected_month(this.state.channel_info.channel_id, e.value, year)}
               />
             </div>
             <div className="topline-container">

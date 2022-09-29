@@ -159,9 +159,9 @@ def all_livestreams(request):
     dhs_df = get_daily_hours_streamed(df)
 
     topline_metrics = {}
-    topline_metrics["monthly_hours_streamed"] = dhs_df["streamed_hours"].sum()
-    topline_metrics["average_daily_hours"] = dhs_df["streamed_hours"].mean()
-    topline_metrics["average_stream_length"] = dhs_df[dhs_df["streamed_hours"] != 0]["streamed_hours"].mean()
+    topline_metrics["monthly_hours_streamed"] = int(dhs_df["streamed_hours"].sum())
+    topline_metrics["average_daily_hours"] = float(dhs_df["streamed_hours"].mean())
+    topline_metrics["average_stream_length"] = float(dhs_df[dhs_df["streamed_hours"] != 0]["streamed_hours"].mean())
 
     for key, value in topline_metrics.items():
             if(pd.isna(value)):
