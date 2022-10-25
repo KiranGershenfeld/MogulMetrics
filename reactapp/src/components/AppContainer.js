@@ -154,6 +154,8 @@ export default class AppContainer extends React.Component {
             this.setState({streamsTableData: []});
           }
           else{
+            console.log(Object.prototype.toString.call(res.data) === '[object Array]')
+            console.log(res.data)
             this.setState({streamsTableData: res.data})
             this.setState({csvData: res.data})
           }

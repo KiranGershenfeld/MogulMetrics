@@ -11,6 +11,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
+import { DataGrid } from '@mui/x-data-grid';
+
+
 function getMonthDay(date)
 {
   var d = new Date(date)
@@ -21,8 +24,22 @@ function getMonthDay(date)
 
   export default function StreamsTable({data}) {
     console.log("STREAMS TABLE FUNCTION WITH DATA: ")
-    console.log(data)
+
+    data.sort((a,b) => {
+      var startDateA = Date.parse(a.start);
+      var startDateB = Date.parse(b.start);
+      if(startDateA >= startDateB)
+      {
+        return -1;
+      }else
+      {
+        return 1;
+      }
+    });
+
+   
     return (
+      <div>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -58,5 +75,7 @@ function getMonthDay(date)
           </TableBody>
         </Table>
       </TableContainer>
+      </div>
+
     );
   }
