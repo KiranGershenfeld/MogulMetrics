@@ -134,7 +134,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
       console.log(`SETTING SVG DIMENSIONS TO WIDTH: ${width} HEIGHT: ${width}`)
       const svg = svgEl
         .attr("width", width)
-        .attr("height", width * 0.8)
+        .attr("height", width * 0.9)
         .append("g")
          .attr("transform", `translate(${margin.left},${margin.top})`);
 
