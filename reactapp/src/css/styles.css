@@ -5,6 +5,15 @@
     min-width: 400px;
 
 }
+.error-message
+{
+    text-align: center;
+    background-color: red;
+    color: white;
+    font-size: 1.2em;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
 .monthly-metrics-section
 {
     margin: auto;
