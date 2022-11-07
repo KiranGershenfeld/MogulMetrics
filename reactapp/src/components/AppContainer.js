@@ -170,9 +170,9 @@ export default class AppContainer extends React.Component {
       return (
         <div>
           <MogulNavBar />
-          <div className='error-message'>
+          {/* <div className='error-message'>
             We are experience database outages, come back later!
-          </div>
+          </div> */}
           <div className='main-panel-content'>
           <div className='channel-container'>
             <Card className= "channel-card d-flex vertical-center" style={{"marginTop": "10px", "padding": "1px 1px 1px 1px"}}>
