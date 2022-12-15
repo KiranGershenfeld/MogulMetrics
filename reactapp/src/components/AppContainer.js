@@ -95,6 +95,7 @@ export default class AppContainer extends React.Component {
             }
 
             for (const [iso_string, hours] of Object.entries(res.data["daily_hours"])) {
+                console.log(`ISO STRING: ${iso_string}`)
                data.push({"date": moment(iso_string), "streamed_hours": hours})
             }
             console.log(data)
@@ -170,9 +171,9 @@ export default class AppContainer extends React.Component {
       return (
         <div>
           <MogulNavBar />
-          {/* <div className='error-message'>
-            We are experience database outages, come back later!
-          </div> */}
+          <div className='error-message'>
+            Working on a fix for the calendar, the data collection is working fine its purely a visual bug. Sorry for the inconvenience!
+          </div>
           <div className='main-panel-content'>
           <div className='channel-container'>
             <Card className= "channel-card d-flex vertical-center" style={{"marginTop": "10px", "padding": "1px 1px 1px 1px"}}>
