@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../css/styles.css'
 import * as moment from "moment"
 import { makeStyles } from '@mui/styles';
+import { CSVLink, CSVDownload } from "react-csv";
 
 
 import Table from '@mui/material/Table';
@@ -45,14 +46,15 @@ function getMonthDay(date)
   return `${month}/${day}`
 }
 
-  export default function StreamsTable({data}) {
-    const [page, setPage] = React.useState(1);
+  export default function StreamsTable({data, channel}) {
+    const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
     const classes = useStyles();
 
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
+      console.log(data.slice(newPage * rowsPerPage, newPage * rowsPerPage + rowsPerPage)[0])
     };
   
     const handleChangeRowsPerPage = (event) => {
@@ -73,9 +75,9 @@ function getMonthDay(date)
     });
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
-   
     return (
       <div>
+        <CSVLink data={data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)} filename={`${channel}_Stream_Data_${new Date().getTime()}.csv`}>CSV Download</CSVLink>
         <div className={classes.root}>
           <TablePagination
               containerStyle={{ marginTop: 100 }}
@@ -108,7 +110,7 @@ function getMonthDay(date)
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
               <TableRow
-                key={row.title}
+                  key={`${row.title}_${row.start}`}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell align="center">

@@ -245,9 +245,8 @@ export default class AppContainer extends React.Component {
           </div>
         </div>
         <div className="streamstable-container">
-              <CSVLink data={this.state.csvData} filename={`${this.state.channel_info.channel_name}_${this.state.month}_stream_metrics`}>CSV Download</CSVLink>
               <div style={{"height": "10px"}}></div>
-              <StreamsTable data={this.state.streamsTableData}/>
+              <StreamsTable data={this.state.streamsTableData} channel={this.state.channel_info.channel_name}/>
             </div>
       </div>
       );
