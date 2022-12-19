@@ -2,7 +2,6 @@ import React from 'react';
 import axios from 'axios';
 import '../css/styles.css'
 import * as moment from "moment"
-import { makeStyles } from '@mui/styles';
 import { CSVLink, CSVDownload } from "react-csv";
 
 
@@ -18,25 +17,7 @@ import TablePagination from '@mui/material/TablePagination';
 import { DataGrid } from '@mui/x-data-grid';
 import { autoType } from 'd3';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      justifyContent:"right",
-      display:'flex',
-      color: "red",
-      alignItems: "center",
-      marginTop: "auto",
-    }
-  },
-  pagination: {
-    alignItems: 'center',
-    justify: 'center',
-  },
-  selectLabel:
-  {
-    marginTop: "auto",
-  }
-}));
+
 
 function getMonthDay(date)
 {
@@ -50,7 +31,6 @@ function getMonthDay(date)
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-    const classes = useStyles();
 
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
@@ -78,7 +58,6 @@ function getMonthDay(date)
     return (
       <div>
         <CSVLink data={data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)} filename={`${channel}_Stream_Data_${new Date().getTime()}.csv`}>CSV Download</CSVLink>
-        <div className={classes.root}>
           <TablePagination
               containerStyle={{ marginTop: 100 }}
               component="div"
@@ -89,7 +68,6 @@ function getMonthDay(date)
               rowsPerPage={rowsPerPage}
               onRowsPerPageChange={handleChangeRowsPerPage}
           />
-        </div>
       <TableContainer component={Paper}>
         
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
