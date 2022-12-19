@@ -1,4 +1,3 @@
-from matplotlib.image import thumbnail
 import requests
 
 import sqlalchemy
@@ -10,6 +9,9 @@ from sqlalchemy import text, Table, MetaData
 import datetime
 import json
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 channels = {"UCrPseYLGpNygVi34QpGNqpA": "Ludwig"}
@@ -22,7 +24,6 @@ cluster = os.environ.get("DB_CLUSTER")
 youtube_api_key = os.environ.get("YOUTUBE_API_KEY")
 
 if __name__ == '__main__':
-
     current_time = datetime.datetime.now(datetime.timezone.utc)
     current_time = datetime.datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S')
 

@@ -23,7 +23,7 @@ logging.info("Logging initialized")
 def get_daily_hours_streamed(df):
 
     utc_offset = time.localtime().tm_gmtoff / (60 * 60)
-    df = df.set_index(df["log_time"].dt.tz_localize("UTC").dt.tz_convert("US/Pacific"))
+    df = df.set_index(df["log_time"].dt.tz_localize("UTC").dt.tz_convert("America/Los_Angeles"))
 
     is_live_markers = list(zip(df.is_live, df.index))
     grouped = [list(g) for k,g in groupby(is_live_markers, lambda x: x[0])]

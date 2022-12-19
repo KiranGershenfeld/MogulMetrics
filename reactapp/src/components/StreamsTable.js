@@ -23,7 +23,6 @@ function getMonthDay(date)
 }
 
   export default function StreamsTable({data}) {
-    console.log("STREAMS TABLE FUNCTION WITH DATA: ")
 
     data.sort((a,b) => {
       var startDateA = Date.parse(a.start);

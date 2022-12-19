@@ -35,6 +35,21 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
 
+function getMonthDateRange(year, month) {
+  var moment = require('moment-timezone');
+
+  // month in moment is 0 based, so 9 is actually october, subtract 1 to compensate
+  // array is 'year', 'month', 'day', etc
+  var startDate = moment.tz([year, month], 'America/Los_Angeles');
+  // Start date is in computer local time
+
+  // Clone the value before .endOf()
+  var endDate = moment(startDate).endOf('month');
+
+  // make sure to call toDate() for plain JavaScript date type
+  return { start: startDate, end: endDate };
+}
+
 export default class AppContainer extends React.Component {
     constructor(props){
       super(props);
@@ -61,16 +76,14 @@ export default class AppContainer extends React.Component {
     };
 
     set_selected_month(channel_id, month_index, year)
-    {
-      console.log(`MONTH IS ${month_index}`)
-      var firstDay = new Date(year, month_index, 1);
-      console.log(`FIRST DAY ${firstDay}`)
-      var lastDay = new Date(year, month_index + 1, 1);
+    {      
+      var dateRange = getMonthDateRange(year, month_index)
+
       axios.get(`${API_URL}/api/all_livestreams`, { 
           params: {
             channel_id : channel_id,
-            min_date_inclusive: firstDay.toISOString(),
-            max_date_exclusive:  lastDay.toISOString(),
+            min_date_inclusive: dateRange['start'].toISOString(),
+            max_date_exclusive: dateRange['end'].toISOString(),
           }
         },{
           headers: {
@@ -79,7 +92,6 @@ export default class AppContainer extends React.Component {
         })
           .then(res => {
             var data = []
-            console.log(typeof(res.data))
             if(Object.keys(res.data).length === 0)
             {
               this.setState({data: {}});
@@ -95,10 +107,8 @@ export default class AppContainer extends React.Component {
             }
 
             for (const [iso_string, hours] of Object.entries(res.data["daily_hours"])) {
-                console.log(`ISO STRING: ${iso_string}`)
                data.push({"date": moment(iso_string), "streamed_hours": hours})
             }
-            console.log(data)
             this.setState({data: data});
             this.setState({topline_metrics: res.data["topline"]})
           });
@@ -132,7 +142,6 @@ export default class AppContainer extends React.Component {
           }
           else{
             this.setState({channel_info: res.data})
-            console.log(`CHANNEL STATE INFO ${this.state.channel_info}`)
           }
         });
 
@@ -155,14 +164,11 @@ export default class AppContainer extends React.Component {
             this.setState({streamsTableData: []});
           }
           else{
-            console.log(Object.prototype.toString.call(res.data) === '[object Array]')
-            console.log(res.data)
             this.setState({streamsTableData: res.data})
             this.setState({csvData: res.data})
           }
         });
 
-        console.log("BEFORE SET SELECTED MONTH")
         this.set_selected_month(channel_id, month, year)
 
     }
@@ -171,9 +177,9 @@ export default class AppContainer extends React.Component {
       return (
         <div>
           <MogulNavBar />
-          <div className='error-message'>
+          {/* <div className='error-message'>
             Working on a fix for the calendar, the data collection is working fine its purely a visual bug. Sorry for the inconvenience!
-          </div>
+          </div> */}
           <div className='main-panel-content'>
           <div className='channel-container'>
             <Card className= "channel-card d-flex vertical-center" style={{"marginTop": "10px", "padding": "1px 1px 1px 1px"}}>

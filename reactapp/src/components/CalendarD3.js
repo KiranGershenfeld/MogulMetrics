@@ -47,9 +47,6 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
     var label_height_offset = 20
 
     var first_day_offset = (first_day.day()) % 7
-    console.log("DATE ITERATOR "+ date_iterator.toString())
-    console.log("DAYS IN MONTH" + number_days_in_month)
-
     for(var i = 0; i < number_days_in_month + first_day_offset; i++)
     {
       var day_obj = {}
@@ -65,7 +62,6 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
 
       if(i < first_day_offset)
       {
-        console.log("DAY NOT IN MONTH")
         day_obj["in_month"] = false
         calendar_data.push(day_obj)
       }
@@ -77,16 +73,14 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
         if(date_iterator > new Date())
         {
           day_obj["occurred"] = false
-          console.log(date_iterator + "has not occured yet, should be grey")
         }
         else{
           day_obj["occurred"] = true
-
+          // console.log(`COMPARISON BETWEEN ${data[data_index]["date"]} = ${date_iterator}`)
           if(data_index < data.length && data[data_index]["date"].isSame(date_iterator, "day"))
           {
             day_obj["valid"] = true
             day_obj["date"] = data[data_index]["date"]
-            console.log("DATE" + data[data_index]["date"].toString())
             day_obj["streamed_hours"] = data[data_index]["streamed_hours"]
             if(day_obj["streamed_hours"] > max_hours_streamed)
             {
@@ -97,10 +91,19 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
             
           }else
           {
-            console.log("No data for date: " + date_iterator)
             day_obj["valid"] = false
             day_obj["date"] = date_iterator
             day_obj["streamed_hours"] = 0
+            date_iterator = date_iterator.add("1", "days")
+
+            if (typeof data[data_index] !== 'undefined')
+            {
+              if (data[data_index]["date"] < date_iterator)
+              {
+                
+              }
+            }
+            
           }
 
         }
@@ -131,7 +134,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
 
       const svgEl = d3.select(svgRef.current);
       svgEl.selectAll("*").remove(); // Clear svg content before adding new elements 
-      console.log(`SETTING SVG DIMENSIONS TO WIDTH: ${width} HEIGHT: ${width}`)
+
       const svg = svgEl
         .attr("width", width)
         .attr("height", width * 0.9)
@@ -141,7 +144,6 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
       const colorScale = d3.scaleSequential(d3_chromatic.interpolateGreens)
         .domain([0, max_hours_streamed + 2])
 
-      console.log(label_data)
       //Creating row labels
       svg.selectAll(".column_label")
         .data(label_data)
