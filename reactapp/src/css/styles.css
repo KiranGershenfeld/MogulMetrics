@@ -73,14 +73,6 @@ ul
     list-style: none;
 }
 
-ul li::before {
-    content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
-    font-weight: bold; /* If you want it to be bold */
-    display: inline-block; /* Needed to add space between the bullet and the text */
-    width: 1em; /* Also needed for space (tweak if needed) */
-    margin-left: -1em; /* Also needed for space (tweak if needed) */
-  }
-
 ul li {
     display: flexbox;
     color: "green"
@@ -94,6 +86,11 @@ a {
     width: 150px;
     height: 84px;
 }
+.MuiTablePagination-root p
+{
+    margin-top: auto;
+}
+
 .about-heading
 {
     font-size: 24px;

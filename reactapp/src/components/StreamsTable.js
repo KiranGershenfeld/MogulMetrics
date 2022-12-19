@@ -2,6 +2,8 @@ import React from 'react';
 import axios from 'axios';
 import '../css/styles.css'
 import * as moment from "moment"
+import { makeStyles } from '@mui/styles';
+
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,9 +12,30 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import TablePagination from '@mui/material/TablePagination';
 
 import { DataGrid } from '@mui/x-data-grid';
+import { autoType } from 'd3';
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    "& > *": {
+      justifyContent:"right",
+      display:'flex',
+      color: "red",
+      alignItems: "center",
+      marginTop: "auto",
+    }
+  },
+  pagination: {
+    alignItems: 'center',
+    justify: 'center',
+  },
+  selectLabel:
+  {
+    marginTop: "auto",
+  }
+}));
 
 function getMonthDay(date)
 {
@@ -23,6 +46,19 @@ function getMonthDay(date)
 }
 
   export default function StreamsTable({data}) {
+    const [page, setPage] = React.useState(1);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+    const classes = useStyles();
+
+    const handleChangePage = (event, newPage) => {
+      setPage(newPage);
+    };
+  
+    const handleChangeRowsPerPage = (event) => {
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setPage(0);
+    };
 
     data.sort((a,b) => {
       var startDateA = Date.parse(a.start);
@@ -36,10 +72,24 @@ function getMonthDay(date)
       }
     });
 
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
    
     return (
       <div>
+        <div className={classes.root}>
+          <TablePagination
+              containerStyle={{ marginTop: 100 }}
+              component="div"
+              rowsPerPageOptions={[10, 25, 50, 100]}
+              count={data.length}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </div>
       <TableContainer component={Paper}>
+        
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -54,7 +104,9 @@ function getMonthDay(date)
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row) => (
+            {data
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row) => (
               <TableRow
                 key={row.title}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -71,6 +123,11 @@ function getMonthDay(date)
 
               </TableRow>
             ))}
+            {emptyRows > 0 && (
+            <TableRow style={{ height: 53 * emptyRows }}>
+              <TableCell colSpan={6} />
+            </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
