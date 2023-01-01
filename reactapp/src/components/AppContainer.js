@@ -30,7 +30,7 @@ const options = [
   { value: 10, label: 'November' },
   { value: 11, label: 'December' },
 ]
-const year = 2022
+const year = 2023
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
@@ -77,7 +77,9 @@ export default class AppContainer extends React.Component {
 
     set_selected_month(channel_id, month_index, year)
     {      
+      // console.log(`API Request for month: ${month_index} and year ${year}`)
       var dateRange = getMonthDateRange(year, month_index)
+      console.log(`API Request for date ranges: ${dateRange['start'].toISOString()} and year ${dateRange['end'].toISOString()}`)
 
       axios.get(`${API_URL}/api/all_livestreams`, { 
           params: {
@@ -177,9 +179,9 @@ export default class AppContainer extends React.Component {
       return (
         <div>
           <MogulNavBar />
-          {/* <div className='error-message'>
-            Working on a fix for the calendar, the data collection is working fine its purely a visual bug. Sorry for the inconvenience!
-          </div> */}
+          <div className='error-message'>
+            2023 broke the calendar as expected, fixed before Jan 5. Sorry for the inconvenience
+          </div>
           <div className='main-panel-content'>
           <div className='channel-container'>
             <Card className= "channel-card d-flex vertical-center" style={{"marginTop": "10px", "padding": "1px 1px 1px 1px"}}>

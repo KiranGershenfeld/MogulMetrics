@@ -60,6 +60,8 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
       day_obj["x"] = column_index * (cellSize + grid_margin)
       day_obj["y"] = row_index * (cellSize + grid_margin) + label_height_offset
 
+      console.log(`Date iterator is ${date_iterator.toISOString()}`)
+
       if(i < first_day_offset)
       {
         day_obj["in_month"] = false
