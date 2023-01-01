@@ -30,6 +30,11 @@ const options = [
   { value: 10, label: 'November' },
   { value: 11, label: 'December' },
 ]
+
+const yearOptions = [
+  {value: 2023, label: "2023"},
+  {value: 2022, label: "2022"},
+]
 const year = 2023
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -54,6 +59,9 @@ export default class AppContainer extends React.Component {
     constructor(props){
       super(props);
       this.set_selected_month=this.set_selected_month.bind(this);
+      this.set_selected_year=this.set_selected_year.bind(this);
+      this.change_date=this.change_date.bind(this);
+
     } 
 
     state = {
@@ -68,16 +76,37 @@ export default class AppContainer extends React.Component {
             "bottom": 10
           }
         },
-        month: "",
+        channel_id: "",
+        selected_month_index: 0,
+        selected_year: 0,
         topline_metrics: {},
         streamsTableData: [],
         csvData: [],
         channel_info: {},
     };
 
-    set_selected_month(channel_id, month_index, year)
+    set_selected_year(year)
+    {
+      console.log(`set_selected_year called with value ${year}`)
+      this.setState({selected_year: year})
+      this.change_date(this.state.channel_id, this.state.selected_month_index, year)
+    }
+
+    set_selected_month(month_index)
+    {
+      console.log(`set_selected_month called with value ${month_index}`)
+      this.setState({selected_month_index: month_index})
+      this.change_date(this.state.channel_id, month_index, this.state.selected_year)
+
+    }
+
+    change_date(channel_id, month_index, year)
     {      
-      // console.log(`API Request for month: ${month_index} and year ${year}`)
+      console.log(`API Request for month: ${month_index} and year ${year}`)
+      // const month_index = this.state.selected_month_index
+      // const year = this.state.selected_year
+      // const channel_id = this.state.channel_id
+
       var dateRange = getMonthDateRange(year, month_index)
       console.log(`API Request for date ranges: ${dateRange['start'].toISOString()} and year ${dateRange['end'].toISOString()}`)
 
@@ -115,18 +144,25 @@ export default class AppContainer extends React.Component {
             this.setState({topline_metrics: res.data["topline"]})
           });
 
-      this.state.month = (month_index + 1).toString();
-      if(this.state.month.length == 1)
-      {
-        this.state.month = "0"+ this.state.month
-      }
       this.state.dimensions.width = document.getElementById("chart-container").offsetWidth
 
     }
     
     componentDidMount() {
       var urlParams = new URLSearchParams(window.location.search)
+
       var channel_id = urlParams.get('channel_id')
+      var selected_year = new moment().year()
+      var selected_month_index = new moment().month()
+      console.log(selected_year)
+      console.log(selected_month_index)
+
+
+      this.setState({selected_year: selected_year})
+      this.setState({selected_month_index: selected_month_index})
+      this.setState({channel_id: channel_id})
+      // console.log(`In componentDidMount selected_year is ${this.state.selected_year} and selected_month_index is ${this.state.selected_month_index}`)
+
 
       axios.get(`${API_URL}/api/streamer_info`, { 
         params: {
@@ -147,13 +183,11 @@ export default class AppContainer extends React.Component {
           }
         });
 
-      var month = new Date().getMonth()
-
       axios.get(`${API_URL}/api/stream_table`, { 
         params: {
           channel_id: channel_id,
           min_date_inclusive: new Date(2022, 7, 30),
-          max_date_exclusive: new Date(year, month + 1, 1)
+          max_date_exclusive: new Date(year, selected_month_index + 1, 1)
         }
       },{
         headers: {
@@ -171,7 +205,7 @@ export default class AppContainer extends React.Component {
           }
         });
 
-        this.set_selected_month(channel_id, month, year)
+        this.change_date(channel_id, selected_month_index, selected_year)
 
     }
 
@@ -179,9 +213,9 @@ export default class AppContainer extends React.Component {
       return (
         <div>
           <MogulNavBar />
-          <div className='error-message'>
+          {/* <div className='error-message'>
             2023 broke the calendar as expected, fixed before Jan 5. Sorry for the inconvenience
-          </div>
+          </div> */}
           <div className='main-panel-content'>
           <div className='channel-container'>
             <Card className= "channel-card d-flex vertical-center" style={{"marginTop": "10px", "padding": "1px 1px 1px 1px"}}>
@@ -206,7 +240,14 @@ export default class AppContainer extends React.Component {
               <Select
                 options={options}
                 defaultValue={{ value: new Date().getMonth(), label: monthNames[new Date().getMonth()]}}
-                onChange={(e) => this.set_selected_month(this.state.channel_info.channel_id, e.value, year)}
+                onChange={(e) => this.set_selected_month(e.value)}
+              />
+            </div>
+            <div className="month-dropdown" style={{"width": "30%", "marginTop": "15px"}}>
+              <Select
+                options={yearOptions}
+                defaultValue={{ value: new moment().year(), label: new moment().year()}}
+                onChange={(e) => this.set_selected_year(e.value)}
               />
             </div>
             <div className="topline-container">
@@ -242,7 +283,7 @@ export default class AppContainer extends React.Component {
               </Card>
             </div>
             <div className="chart-container" id="chart-container">
-                <CalendarD3 data={this.state.data} month={this.state.month} year={2022} dimensions={this.state.dimensions} />
+                <CalendarD3 data={this.state.data} dimensions={this.state.dimensions} month={this.state.selected_month_index} year={this.state.selected_year} />
             </div>
           </div>
         </div>

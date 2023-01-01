@@ -12,17 +12,17 @@ what month should the calendar draw. In order for the result to make sense *most
 that month range. The calendar will then draw the month with any valid dates given (hopefully all matching) greying out dates that have not occured yet. 
 */
 function getFirstDayOfMonth(month, year){
-  return moment(year + "-" + month + "-01")
+  return moment(year + "-" + (month + 1) + "-01")
 }
 
 function daysInMonth (month, year) {
-  return new Date(year, month, 0).getDate();
+  return new Date(year, (month + 1), 0).getDate();
 }
 
-const CalendarD3 = ({ data, month, year, dimensions }) => {
+const CalendarD3 = ({ data, dimensions, month, year}) => {
     console.log("Calling Calendar")
     console.log(data)
-
+    
     const svgRef = React.useRef(null);
     var { width, height, margin } = dimensions;
     const svgWidth = width + margin.left + margin.right;
@@ -31,6 +31,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
     const days= ["Su", "M", "T", "W", "Th", "F", "S"]
 
     const first_day = getFirstDayOfMonth(month, year)
+    console.log(`first day of month is ${first_day}`)
     const number_days_in_month = daysInMonth(month, year)
     const days_per_row = 7
     const grid_margin = 10
@@ -47,6 +48,9 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
     var label_height_offset = 20
 
     var first_day_offset = (first_day.day()) % 7
+    console.log(`For loop will create ${number_days_in_month + first_day_offset} number of squares`)
+    console.log(`number of days in month ${number_days_in_month + first_day_offset} number of squares`)
+
     for(var i = 0; i < number_days_in_month + first_day_offset; i++)
     {
       var day_obj = {}
@@ -60,7 +64,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
       day_obj["x"] = column_index * (cellSize + grid_margin)
       day_obj["y"] = row_index * (cellSize + grid_margin) + label_height_offset
 
-      console.log(`Date iterator is ${date_iterator.toISOString()}`)
+      console.log(`Date iterator is ${date_iterator.date()} and needs to be less than ${new moment().date()}`)
 
       if(i < first_day_offset)
       {
@@ -72,14 +76,17 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
       {
         day_obj["in_month"] = true
 
-        if(date_iterator > new Date())
+        if(date_iterator > new moment())
         {
           day_obj["occurred"] = false
         }
         else{
           day_obj["occurred"] = true
           // console.log(`COMPARISON BETWEEN ${data[data_index]["date"]} = ${date_iterator}`)
-          if(data_index < data.length && data[data_index]["date"].isSame(date_iterator, "day"))
+          // console.log(data[data_index]["date"].date() == date_iterator.date())
+          // console.log(data[data_index]["date"])
+
+          if(data_index < data.length && data[data_index]["date"].date() == date_iterator.date())
           {
             day_obj["valid"] = true
             day_obj["date"] = data[data_index]["date"]
@@ -90,6 +97,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
             }
 
             data_index++
+            date_iterator = date_iterator.add("1", "days")
             
           }else
           {
@@ -111,7 +119,7 @@ const CalendarD3 = ({ data, month, year, dimensions }) => {
         }
         calendar_data.push(day_obj)
 
-        date_iterator = date_iterator.add("1", "days")
+        // date_iterator = date_iterator.add("1", "days")
 
       }
 
