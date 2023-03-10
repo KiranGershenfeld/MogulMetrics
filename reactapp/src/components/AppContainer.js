@@ -213,9 +213,9 @@ export default class AppContainer extends React.Component {
       return (
         <div>
           <MogulNavBar />
-          <div className='error-message'>
+          {/* <div className='error-message'>
             Data Outage Jan-18-20th caused by third-party package updates. 2 streams (7 hours) are missing 
-          </div>
+          </div> */}
           <div className='main-panel-content'>
           <div className='channel-container'>
             <Card className= "channel-card d-flex vertical-center" style={{"marginTop": "10px", "padding": "1px 1px 1px 1px"}}>
