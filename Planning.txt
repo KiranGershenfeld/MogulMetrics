@@ -1,3 +1,4 @@
+May 3, 2022:
 So, now that I have a bit of time again, this idea has like actual merit even at the achievable level.
 I've been collecting the data for months now which is already valuable. If anything find just a way to publish that alone.
 I can actually visualize the process of fully doing something like this now though. 
@@ -29,3 +30,9 @@ anything I build with a python front end its just not where it needs to be for e
 real js means its much easier for others to contribute in modular roles and with skillsets that are way more widely available and useful to learn. 
 like no one is putting in 10 hours of work to learn plotly but they might for react + d3.
 Or for a python django backend. 
+
+Jan 28, 2024:
+Cant believe im returning to this, reading what I wrote above is kind of a trip. Certainly have a much wider skillset at this point. 
+Its a little cringe but im keeping it because its real.
+Plan for now is move everything in to a much clearer repository structure hopefully without breaking anything that currently exists. 
+Hoping to get LocalTrending project up and running on the same web address (but I guess it will have a different stack)
