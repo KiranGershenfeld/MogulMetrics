@@ -1,0 +1,39 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:13.13-alpine3.19
+    container_name: postgres
+    environment:
+      POSTGRES_DB: local-trending
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test
+    ports:
+      - "5432:5432"
+    hostname: db
+  local-trending:
+    image: local-trending
+    build:
+      context: ./services/video-ingest
+      dockerfile: ./services/video-ingest/cmd/server/Dockerfile
+    container_name: local-trending
+    ports:
+      - "8080:8080"
+    env_file: "./services/video-ingest/local.env"
+    volumes:
+      - ./services/video-ingest/config/local.yaml:/config/config.yaml
+      - ./services/video-ingest/migrations:/config/migrations
+    command: video-ingest --conf /config/config.yaml
+    restart: always
+    depends_on:
+      - "db"
+  cron_scheduler:
+    image: cron_scheduler
+    build:
+      context: ./services/jobs
+      dockerfile: ./services/jobs/Dockerfile
+    container_name: cron_scheduler
+    env_file: "./services/video-ingest/local.env"
+    restart: always
+    depends_on:
+    - "db"g
