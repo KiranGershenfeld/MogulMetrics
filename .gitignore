@@ -290,7 +290,7 @@ services/mogul-metrics-frontend/fixtures/dom/public/react.js
 services/mogul-metrics-frontend/test/the-files-to-test.generated.js
 services/mogul-metrics-frontend/*.log*
 services/mogul-metrics-frontend/chrome-user-data
-services/mogul-metrics-frontend/*.sublime-project
+services/mogul-metrics-frontend/*.sublimgite-project
 services/mogul-metrics-frontend/*.sublime-workspace
 services/mogul-metrics-frontend/.idea
 services/mogul-metrics-frontend/*.iml
