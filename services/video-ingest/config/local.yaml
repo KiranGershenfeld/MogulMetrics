@@ -1,0 +1,17 @@
+server:
+  readTimeout: 15s
+  writeTimeout: 15s
+  gracefulShutdown: 30s
+logging:
+  level: -1
+  encoding: console
+  development: true
+db:
+  logLevel: 1
+  migrate:
+    enable: true
+    dir: /config/migrations
+  pool:
+    maxOpen: 10
+    maxIdle: 5
+    maxLifetime: "5m"

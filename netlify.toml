@@ -1,0 +1,16 @@
+[build]
+  base = "reactapp"
+  publish = "build"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/api/*"
+  to = "http://ec2-18-191-182-112.us-east-2.compute.amazonaws.com:8000/api/:splat"
+  status = 200
+  force = true
+  
+[[redirects]]
+  from = "/main"
+  to = "/index.html"
+  status = 200
+  force = false

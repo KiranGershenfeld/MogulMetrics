@@ -1,0 +1,38 @@
+May 3, 2022:
+So, now that I have a bit of time again, this idea has like actual merit even at the achievable level.
+I've been collecting the data for months now which is already valuable. If anything find just a way to publish that alone.
+I can actually visualize the process of fully doing something like this now though. 
+Hosting from s3, domains with aws, js front end (even react if we want to get fancy) and flask backend talking to cockroach db. 
+The whole thing is legitimately possible. 
+I might even re-route the whole thing do be django, mysql. or django cockroach sql at the very least
+and have python views wrap around the rest api. that would make it much easier for someone to contribute as well.
+We can make a role that is allowed to only run queries and not post information.
+Then we make a django views file with the python logic that powers the application. 
+Then we write a pure javascript front end? Is that easier or much worse than using a python dashboarding library. 
+it makes me sad to say because it acknowledges the value of school but the stack used in capstone with d3 is 
+actually exactly what im looking for. Like unironically thats actually just the right stack to use. 
+
+
+cockroach sql -> django -> react -> d3 
+im kinda down to run this. Like this seems fun
+I've already set so much of this up that it doesnt feel that scary
+I have what I need for the calendar d3 view literally available right now so I can actually just do this. 
+How does this start.
+Create a django app that is configured to talk to cockroach sql. DONE
+    Potentially migrate onto local mysql NOPE
+Create a react app front end DONE
+Get d3 working instead that react app
+Write a view to return the data for the calendar
+Make the calendar in d3
+Profit $$$?
+Pure js front end seems sucky but honestly python isnt built for web design and I dont think im gonna be happy with 
+anything I build with a python front end its just not where it needs to be for ease of use to a solid product.
+real js means its much easier for others to contribute in modular roles and with skillsets that are way more widely available and useful to learn. 
+like no one is putting in 10 hours of work to learn plotly but they might for react + d3.
+Or for a python django backend. 
+
+Jan 28, 2024:
+Cant believe im returning to this, reading what I wrote above is kind of a trip. Certainly have a much wider skillset at this point. 
+Its a little cringe but im keeping it because its real.
+Plan for now is move everything in to a much clearer repository structure hopefully without breaking anything that currently exists. 
+Hoping to get LocalTrending project up and running on the same web address (but I guess it will have a different stack)
