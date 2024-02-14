@@ -10,6 +10,8 @@ __pycache__/
 *.ppk
 *.log
 
+.DS_STORE
+
 # Distribution / packaging
 .Python
 build/
